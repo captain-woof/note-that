@@ -57,11 +57,11 @@ class NoteProvider extends ChangeNotifier {
       List<Map<String, dynamic>> notesMap;
 
       if (searchTerm != null) {
-        notesMap = await _db!.query("notes",
-            where: "title LIKE %?% OR body LIKE %?%",
-            whereArgs: [searchTerm, searchTerm]);
+        notesMap = await _db!.query(_tableName,
+            where: "title LIKE ? OR body LIKE ?",
+            whereArgs: ["%$searchTerm%", "%$searchTerm%"]);
       } else {
-        notesMap = await _db!.query("notes");
+        notesMap = await _db!.query(_tableName);
       }
 
       var notesMapIterator =

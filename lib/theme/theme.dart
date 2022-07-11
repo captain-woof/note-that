@@ -17,6 +17,7 @@ class ThemeCustom {
             iconTheme: const IconThemeData(color: _primaryColor),
             backgroundColor: Colors.white,
             elevation: 0),
+        scaffoldBackgroundColor: Colors.white,
         textTheme: TextTheme(
             titleLarge: GoogleFonts.lato(
                 fontWeight: FontWeight.w600,
