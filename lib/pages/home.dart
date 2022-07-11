@@ -53,11 +53,14 @@ class _HomePageState extends State<HomePage> {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                                body.length < 32
-                                    ? body
-                                    : "${body.substring(0, 32)}...",
-                                style: Theme.of(context).textTheme.bodyMedium)
+                            Expanded(
+                                child: Text(
+                                    body.length < 100
+                                        ? body
+                                        : "${body.substring(0, 100)}...",
+                                    overflow: TextOverflow.fade,
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium))
                           ],
                         ),
                       ),

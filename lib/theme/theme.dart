@@ -18,21 +18,29 @@ class ThemeCustom {
             backgroundColor: Colors.white,
             elevation: 0),
         textTheme: TextTheme(
-            titleLarge: GoogleFonts.montserrat(),
-            titleMedium: GoogleFonts.lato(),
-            titleSmall: GoogleFonts.poppins(),
-            bodyLarge: GoogleFonts.lato(),
-            bodyMedium: GoogleFonts.poppins(),
-            bodySmall: GoogleFonts.poppins(),
+            titleLarge: GoogleFonts.lato(
+                fontWeight: FontWeight.w600,
+                color: _primaryColor,
+                fontSize: 20,
+                letterSpacing: 0.1),
+            titleMedium: GoogleFonts.lato(
+                fontWeight: FontWeight.w500,
+                color: _primaryColor,
+                fontSize: 18,
+                letterSpacing: 0.1),
+            titleSmall: GoogleFonts.poppins(
+              fontWeight: FontWeight.w500,
+              color: _primaryColor,
+              fontSize: 16,
+            ),
+            bodyLarge: GoogleFonts.lato(fontSize: 18, letterSpacing: 0.1),
+            bodyMedium: GoogleFonts.poppins(fontSize: 16, letterSpacing: 0.1),
+            bodySmall: GoogleFonts.poppins(fontSize: 14, letterSpacing: 0.1),
             labelLarge: GoogleFonts.poppins(),
             labelSmall: GoogleFonts.poppins()),
         colorScheme: ColorScheme.fromSeed(seedColor: _primaryColor),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: _primaryColor
-        ),
-        snackBarTheme: const SnackBarThemeData(
-          backgroundColor: _primaryColor
-        )
-        );
+        floatingActionButtonTheme:
+            const FloatingActionButtonThemeData(backgroundColor: _primaryColor),
+        snackBarTheme: const SnackBarThemeData(backgroundColor: _primaryColor));
   }
 }
