@@ -50,19 +50,20 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             child: Column(
               children: [
-                TextField(
-                  // Search bar
-                  controller: searchTextController,
-                  onChanged: (searchTerm) {
-                    handleSearch(notesStore, searchTerm);
-                  },
-                  style: Theme.of(context).textTheme.titleSmall,
-                  decoration: const InputDecoration(
-                      hintText: "Search...",
-                      prefixIcon: Icon(Icons.search),
-                      contentPadding: EdgeInsets.all(0),
-                      border: OutlineInputBorder(borderSide: BorderSide())),
-                ),
+                if (notesStore.getNotes(null).isNotEmpty)
+                  TextField(
+                    // Search bar
+                    controller: searchTextController,
+                    onChanged: (searchTerm) {
+                      handleSearch(notesStore, searchTerm);
+                    },
+                    style: Theme.of(context).textTheme.titleSmall,
+                    decoration: const InputDecoration(
+                        hintText: "Search...",
+                        prefixIcon: Icon(Icons.search),
+                        contentPadding: EdgeInsets.all(0),
+                        border: OutlineInputBorder(borderSide: BorderSide())),
+                  ),
                 const SizedBox(height: 24),
                 NotesStoredGrid(
                     // Notes stored
