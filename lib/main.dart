@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:note_that/pages/home.dart';
-import 'package:note_that/pages/noteEditor.dart';
-import 'package:note_that/providers/note.dart';
+import 'package:note_that/pages/home/home.dart';
+import 'package:note_that/pages/noteEditor/noteEditor.dart';
+import 'package:note_that/stores/notesStore.dart';
+import 'package:note_that/stores/selectedNoteStore.dart';
 import 'package:note_that/theme/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -16,11 +17,14 @@ class NoteThat extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<NoteProvider>(create: (context) {
-          NoteProvider noteProvider = NoteProvider();
-          noteProvider.initDatabase();
-          return noteProvider;
-        })
+        ChangeNotifierProvider<NotesStore>(create: (context) {
+          // Providing NotesStore
+          NotesStore notesStore = NotesStore();
+          notesStore.initDatabase();
+          return notesStore;
+        }),
+        ChangeNotifierProvider<NoteData>(
+            create: (context) => NoteData.blank()) // Providing SelectedNote
       ],
       child: MaterialApp(
         title: "NoteThat",

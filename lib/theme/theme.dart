@@ -22,21 +22,29 @@ class ThemeCustom {
             titleLarge: GoogleFonts.lato(
                 fontWeight: FontWeight.w600,
                 color: _primaryColor,
-                fontSize: 20,
+                fontSize: 28,
                 letterSpacing: 0.1),
-            titleMedium: GoogleFonts.lato(
-                fontWeight: FontWeight.w500,
+            titleMedium: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
                 color: _primaryColor,
-                fontSize: 18,
-                letterSpacing: 0.1),
+                fontSize: 24),
             titleSmall: GoogleFonts.poppins(
               fontWeight: FontWeight.w500,
               color: _primaryColor,
-              fontSize: 16,
+              fontSize: 20,
             ),
-            bodyLarge: GoogleFonts.lato(fontSize: 18, letterSpacing: 0.1),
-            bodyMedium: GoogleFonts.poppins(fontSize: 16, letterSpacing: 0.1),
-            bodySmall: GoogleFonts.poppins(fontSize: 14, letterSpacing: 0.1),
+            bodyLarge: GoogleFonts.lato(
+                fontSize: 20, letterSpacing: 0.1, height: 1.75),
+            bodyMedium: GoogleFonts.poppins(
+                fontSize: 18,
+                letterSpacing: 0.1,
+                height: 1.75,
+                wordSpacing: 0.1),
+            bodySmall: GoogleFonts.poppins(
+                fontSize: 16,
+                letterSpacing: 0.1,
+                height: 1.625,
+                color: Colors.grey[800]),
             labelLarge: GoogleFonts.poppins(),
             labelSmall: GoogleFonts.poppins()),
         colorScheme: ColorScheme.fromSeed(seedColor: _primaryColor),
