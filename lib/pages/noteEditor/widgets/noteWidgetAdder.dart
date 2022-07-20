@@ -6,8 +6,7 @@ import 'package:provider/provider.dart';
 class NoteWidgetAdder extends StatelessWidget {
   const NoteWidgetAdder({Key? key}) : super(key: key);
 
-  void handleShowCamera(
-      {required BuildContext context, String type = "image"}) {
+  void handleShowCamera({required BuildContext context}) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -30,14 +29,15 @@ class NoteWidgetAdder extends StatelessWidget {
             _PostWidgetAdderButton(
                 onPressed: () {
                   noteSelected.addIndividualData(
-                      noteIndividualData: "", type: NoteIndividualDataType.text);
+                      noteIndividualData: "",
+                      type: NoteIndividualDataType.text);
                 },
                 iconData: Icons.text_fields_sharp),
 
             // Camera
             _PostWidgetAdderButton(
                 onPressed: () {
-                  handleShowCamera(context: context, type: "camera");
+                  handleShowCamera(context: context);
                 },
                 iconData: Icons.camera_alt_outlined),
 
