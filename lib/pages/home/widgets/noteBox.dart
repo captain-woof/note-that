@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import 'package:note_that/stores/notesStore.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
 import 'package:provider/provider.dart';
 
@@ -49,7 +48,8 @@ class NoteBox extends StatelessWidget {
                             overflow: TextOverflow.fade,
                             style: Theme.of(context).textTheme.bodySmall)
                         : (summaryIndividualData.getType() == "image"
-                            ? Image.file(summaryIndividualData.getDisplayData())
+                            ? Image.file((summaryIndividualData as ImageData)
+                                .getImageFile())
                             : const SizedBox()))
               ],
             ),

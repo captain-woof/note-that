@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.note_that">
+    package="in.sohail_saha.note_that">
    <application
-        android:label="note_that"
+        android:label="Note That"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

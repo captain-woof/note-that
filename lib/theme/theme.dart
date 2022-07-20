@@ -50,6 +50,8 @@ class ThemeCustom {
         colorScheme: ColorScheme.fromSeed(seedColor: _primaryColor),
         floatingActionButtonTheme:
             const FloatingActionButtonThemeData(backgroundColor: _primaryColor),
-        snackBarTheme: const SnackBarThemeData(backgroundColor: _primaryColor));
+        snackBarTheme: const SnackBarThemeData(backgroundColor: _primaryColor),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+            color: _primaryColor, circularTrackColor: null));
   }
 }

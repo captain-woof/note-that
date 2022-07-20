@@ -6,7 +6,12 @@ import 'package:note_that/stores/selectedNoteStore.dart';
 import 'package:note_that/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  // Ensure that plugin services are initialized so that `availableCameras()`
+  // can be called before `runApp()`
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Run the Flutter app
   runApp(const NoteThat());
 }
 
@@ -24,7 +29,7 @@ class NoteThat extends StatelessWidget {
           return notesStore;
         }),
         ChangeNotifierProvider<NoteData>(
-            create: (context) => NoteData.blank()) // Providing SelectedNote
+            create: (context) => NoteData.blank()), // Providing SelectedNote
       ],
       child: MaterialApp(
         title: "NoteThat",

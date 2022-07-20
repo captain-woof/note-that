@@ -199,7 +199,7 @@ class ImageData extends NoteIndividualData {
   }
 
   ImageData.fromSerialized({required String imgDataSerialized}) {
-    String imgFilePath = imgDataSerialized.substring(4);
+    String imgFilePath = imgDataSerialized.substring(6);
     File newImgFile = File(imgFilePath);
     _imgFile = newImgFile;
   }

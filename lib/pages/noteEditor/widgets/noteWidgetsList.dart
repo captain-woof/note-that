@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:note_that/pages/noteEditor/widgets/noteImage.dart';
 import 'package:note_that/pages/noteEditor/widgets/noteText.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,10 @@ class NoteWidgetsList extends StatefulWidget {
 class _NoteWidgetsListState extends State<NoteWidgetsList> {
   int prevLenOfList = 0;
   Key prevKeyOfList = UniqueKey();
+
+  void removeIndividualData(NoteData noteSelected, int index) {
+    noteSelected.removeIndividualData(index: index + 1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +54,17 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
                       type: "text");
                 },
                 onDelete: () {
-                  noteSelected.removeIndividualData(index: index + 1);
+                  removeIndividualData(noteSelected, index);
                 },
               );
             } else if (individualData.getType() == "image") {
               // For image
-              return const SizedBox();
+              return NoteImage(
+                imageData: individualData as ImageData,
+                onDelete: () {
+                  removeIndividualData(noteSelected, index);
+                },
+              );
             } else {
               // For unsupported data
               return const SizedBox();
