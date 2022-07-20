@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import "dart:convert" as convert;
 
+enum NoteIndividualDataType { title, text, image, video, audio }
+
 class NoteData with ChangeNotifier {
   int? _id;
   late List<NoteIndividualData> _bodyData;
@@ -55,10 +57,10 @@ class NoteData with ChangeNotifier {
   }
 
   void addIndividualData(
-      {required dynamic noteIndividualData, required String type}) {
-    if (type == "text") {
+      {required dynamic noteIndividualData, required NoteIndividualDataType type}) {
+    if (type == NoteIndividualDataType.text) {
       _bodyData.add(TextData(text: noteIndividualData));
-    } else if (type == "image") {
+    } else if (type == NoteIndividualDataType.image) {
       _bodyData.add(ImageData.fromPath(imgPath: noteIndividualData));
     }
     notifyListeners();
@@ -67,13 +69,13 @@ class NoteData with ChangeNotifier {
   void setIndividualData(
       {required int index,
       required dynamic newNoteIndividualData,
-      required String type}) {
+      required NoteIndividualDataType type}) {
     if (index < 0 || index >= _bodyData.length) {
       throw ("Invalid index of individual data");
     } else {
-      if (type == "text") {
+      if (type == NoteIndividualDataType.text) {
         (_bodyData[index] as TextData).setText(newText: newNoteIndividualData);
-      } else if (type == "image") {
+      } else if (type == NoteIndividualDataType.image) {
         (_bodyData[index] as ImageData)
             .setImgFileWithPath(newImgPath: newNoteIndividualData);
       }
@@ -114,7 +116,7 @@ class NoteData with ChangeNotifier {
 // REQUIRED CLASSES FOR INDIVIDUAL DATA
 abstract class NoteIndividualData {
   dynamic getDisplayData();
-  String getType();
+  NoteIndividualDataType getType();
   String serialize();
   bool search(String searchTerm);
 }
@@ -152,7 +154,7 @@ class TitleData extends NoteIndividualData {
   }
 
   @override
-  String getType() => "title";
+  NoteIndividualDataType getType() => NoteIndividualDataType.title;
 }
 
 class TextData extends NoteIndividualData {
@@ -188,7 +190,7 @@ class TextData extends NoteIndividualData {
   }
 
   @override
-  String getType() => "text";
+  NoteIndividualDataType getType() => NoteIndividualDataType.text;
 }
 
 class ImageData extends NoteIndividualData {
@@ -234,5 +236,5 @@ class ImageData extends NoteIndividualData {
   }
 
   @override
-  String getType() => "image";
+  NoteIndividualDataType getType() => NoteIndividualDataType.image;
 }

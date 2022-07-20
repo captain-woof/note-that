@@ -43,11 +43,13 @@ class NoteBox extends StatelessWidget {
                 const SizedBox(height: 2),
                 Expanded(
                     // Summary of the note (first inidividual data)
-                    child: summaryIndividualData.getType() == "text"
+                    child: summaryIndividualData.getType() ==
+                            NoteIndividualDataType.text
                         ? Text(summaryIndividualData.getDisplayData(),
                             overflow: TextOverflow.fade,
                             style: Theme.of(context).textTheme.bodySmall)
-                        : (summaryIndividualData.getType() == "image"
+                        : (summaryIndividualData.getType() ==
+                                NoteIndividualDataType.image
                             ? Image.file((summaryIndividualData as ImageData)
                                 .getImageFile())
                             : const SizedBox()))

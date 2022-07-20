@@ -30,7 +30,7 @@ class NoteWidgetAdder extends StatelessWidget {
             _PostWidgetAdderButton(
                 onPressed: () {
                   noteSelected.addIndividualData(
-                      noteIndividualData: "", type: "text");
+                      noteIndividualData: "", type: NoteIndividualDataType.text);
                 },
                 iconData: Icons.text_fields_sharp),
 

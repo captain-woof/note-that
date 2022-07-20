@@ -43,7 +43,7 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
               noteSelected.getBodyData()[index + 1];
 
           return () {
-            if (individualData.getType() == "text") {
+            if (individualData.getType() == NoteIndividualDataType.text) {
               // For text
               return NoteText(
                 initialValue: (individualData as TextData).getText(),
@@ -51,13 +51,14 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
                   noteSelected.setIndividualData(
                       index: index + 1,
                       newNoteIndividualData: val,
-                      type: "text");
+                      type: NoteIndividualDataType.text);
                 },
                 onDelete: () {
                   removeIndividualData(noteSelected, index);
                 },
               );
-            } else if (individualData.getType() == "image") {
+            } else if (individualData.getType() ==
+                NoteIndividualDataType.image) {
               // For image
               return NoteImage(
                 imageData: individualData as ImageData,

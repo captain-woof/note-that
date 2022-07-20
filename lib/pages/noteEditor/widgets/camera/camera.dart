@@ -96,7 +96,7 @@ class _CameraState extends State<Camera> {
       String savePath = path.join(saveDirectory.path, _tempFile.name);
       _tempFile.saveTo(savePath).then((_) {
         noteSelected.addIndividualData(
-            noteIndividualData: savePath, type: "image");
+            noteIndividualData: savePath, type: NoteIndividualDataType.image);
         Navigator.of(context).pop();
       });
     });
