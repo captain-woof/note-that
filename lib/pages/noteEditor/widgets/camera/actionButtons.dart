@@ -10,8 +10,8 @@ class CameraActionButtons extends StatefulWidget {
   final Function() savePicture;
   final Function() recordVideo;
   final Function() stopVideo;
-  final Function() pauseVideo;
-  final Function() resumeVideo;
+  final Function()? pauseVideo;
+  final Function()? resumeVideo;
   final Function() saveVideo;
 
   const CameraActionButtons(

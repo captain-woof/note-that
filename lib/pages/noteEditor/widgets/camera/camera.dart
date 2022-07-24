@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:note_that/pages/noteEditor/widgets/camera/actionButtons.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 enum CameraType { image, video }
 
@@ -30,6 +31,7 @@ class _CameraState extends State<Camera> {
   late CameraCaptureState _cameraCaptureState;
   late double scale;
   late XFile _tempFile;
+  late bool pauseResumeSupported;
 
   // Check if multiple (back and front cameras) are available
   bool areMultipleCamerasAvailable() {
@@ -151,6 +153,22 @@ class _CameraState extends State<Camera> {
     });
   }
 
+  // Function to get if pause/resume recording video is supported
+  Future<bool> getPlatformSupportPauseResume() async {
+    DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    var androidDeviceInfo = await deviceInfoPlugin.androidInfo;
+
+    // If android, check if API is at least 24
+    if (androidDeviceInfo.version.sdkInt != null) {
+      return androidDeviceInfo.version.sdkInt! >= 24;
+    }
+
+    // If any other platform, no check required
+    else {
+      return true;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -158,8 +176,14 @@ class _CameraState extends State<Camera> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     _cameraInitializerFuture = availableCameras().then((cameras) async {
+      // Get camera info
       _cameraDescriptions = cameras;
+
+      // Initialise with first camera info
       await initializeCamera(cameraLensSelectedIndex: 0);
+
+      // Get if pause/resume is supported
+      pauseResumeSupported = await getPlatformSupportPauseResume();
     });
   }
 
@@ -245,8 +269,8 @@ class _CameraState extends State<Camera> {
                         savePicture(noteSelected);
                       },
                       recordVideo: recordVideo,
-                      pauseVideo: pauseVideo,
-                      resumeVideo: resumeVideo,
+                      pauseVideo: pauseResumeSupported ? pauseVideo : null,
+                      resumeVideo: pauseResumeSupported ? resumeVideo : null,
                       stopVideo: stopVideo,
                       saveVideo: () {
                         saveVideo(noteSelected);

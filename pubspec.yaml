@@ -38,6 +38,7 @@ dependencies:
   path: ^1.8.1
   video_player: ^2.4.5
   flutter_video_info: ^1.2.0
+  device_info_plus: ^4.0.1
 
 dev_dependencies:
   flutter_test:
