@@ -22,19 +22,37 @@ class NoteData with ChangeNotifier {
     _id = id;
     List<NoteIndividualData> newBodyData = [];
 
+    // Iterate over each individual serialised data
     for (String individualSerializedData in serializedData) {
+      // If data is title
       if (TitleData.isTitleSerializedData(
           individualData: individualSerializedData)) {
         newBodyData.add(TitleData.fromSerialized(
             titleSerialized: individualSerializedData));
-      } else if (TextData.isTextSerializedData(
+      }
+      // If data is text
+      else if (TextData.isTextSerializedData(
           individualData: individualSerializedData)) {
         newBodyData.add(
             TextData.fromSerialized(textSerialized: individualSerializedData));
-      } else if (ImageData.isImgSerializedData(
+      }
+      // If data is image
+      else if (ImageData.isImgSerializedData(
           individualData: individualSerializedData)) {
         newBodyData.add(ImageData.fromSerialized(
             imgDataSerialized: individualSerializedData));
+      }
+      // If data is video
+      else if (VideoData.isVideoSerializedData(
+          individualData: individualSerializedData)) {
+        newBodyData.add(VideoData.fromSerialized(
+            videoDataSerialized: individualSerializedData));
+      }
+      // If data is audio
+      else if (AudioData.isAudioSerializedData(
+          individualData: individualSerializedData)) {
+        newBodyData.add(AudioData.fromSerialized(
+            audioDataSerialized: individualSerializedData));
       }
     }
     _bodyData = newBodyData;
@@ -57,11 +75,23 @@ class NoteData with ChangeNotifier {
   }
 
   void addIndividualData(
-      {required dynamic noteIndividualData, required NoteIndividualDataType type}) {
+      {required dynamic noteIndividualData,
+      required NoteIndividualDataType type}) {
+    // If data to add is text
     if (type == NoteIndividualDataType.text) {
       _bodyData.add(TextData(text: noteIndividualData));
-    } else if (type == NoteIndividualDataType.image) {
+    }
+    // If data to add is image
+    else if (type == NoteIndividualDataType.image) {
       _bodyData.add(ImageData.fromPath(imgPath: noteIndividualData));
+    }
+    // If data to add is video
+    else if (type == NoteIndividualDataType.video) {
+      _bodyData.add(VideoData.fromPath(videoPath: noteIndividualData));
+    }
+    // If data to add is audio
+    else if (type == NoteIndividualDataType.audio) {
+      _bodyData.add(AudioData.fromPath(audioPath: noteIndividualData));
     }
     notifyListeners();
   }
@@ -73,11 +103,24 @@ class NoteData with ChangeNotifier {
     if (index < 0 || index >= _bodyData.length) {
       throw ("Invalid index of individual data");
     } else {
+      // If data to add is text
       if (type == NoteIndividualDataType.text) {
         (_bodyData[index] as TextData).setText(newText: newNoteIndividualData);
-      } else if (type == NoteIndividualDataType.image) {
+      }
+      // If data to add is image
+      else if (type == NoteIndividualDataType.image) {
         (_bodyData[index] as ImageData)
             .setImgFileWithPath(newImgPath: newNoteIndividualData);
+      }
+      // If data to add is video
+      else if (type == NoteIndividualDataType.video) {
+        (_bodyData[index] as VideoData)
+            .setVideoFileWithPath(newVideoPath: newNoteIndividualData);
+      }
+      // If data to add is audio
+      else if (type == NoteIndividualDataType.audio) {
+        (_bodyData[index] as AudioData)
+            .setAudioFileWithPath(newAudioPath: newNoteIndividualData);
       }
       notifyListeners();
     }
@@ -237,4 +280,96 @@ class ImageData extends NoteIndividualData {
 
   @override
   NoteIndividualDataType getType() => NoteIndividualDataType.image;
+}
+
+class VideoData extends NoteIndividualData {
+  late File _videoFile;
+
+  VideoData({required File videoFile}) {
+    _videoFile = videoFile;
+  }
+
+  VideoData.fromSerialized({required String videoDataSerialized}) {
+    String videoFilePath = videoDataSerialized.substring(6);
+    File newVideoFile = File(videoFilePath);
+    _videoFile = newVideoFile;
+  }
+
+  VideoData.fromPath({required String videoPath}) {
+    File newVideoFile = File(videoPath);
+    _videoFile = newVideoFile;
+  }
+
+  @override
+  bool search(String searchTerm) => false;
+
+  @override
+  File getDisplayData() => _videoFile;
+
+  File getVideoFile() => _videoFile;
+
+  void setVideoFile({required File newVideoFile}) {
+    _videoFile = newVideoFile;
+  }
+
+  void setVideoFileWithPath({required String newVideoPath}) {
+    File newVideoFile = File(newVideoPath);
+    _videoFile = newVideoFile;
+  }
+
+  @override
+  String serialize() => "video:${_videoFile.path}";
+
+  static bool isVideoSerializedData({required String individualData}) {
+    return individualData.substring(0, 5) == "video";
+  }
+
+  @override
+  NoteIndividualDataType getType() => NoteIndividualDataType.video;
+}
+
+class AudioData extends NoteIndividualData {
+  late File _audioFile;
+
+  AudioData({required File audioFile}) {
+    _audioFile = audioFile;
+  }
+
+  AudioData.fromSerialized({required String audioDataSerialized}) {
+    String audioFilePath = audioDataSerialized.substring(6);
+    File newAudioFile = File(audioFilePath);
+    _audioFile = newAudioFile;
+  }
+
+  AudioData.fromPath({required String audioPath}) {
+    File newAudioFile = File(audioPath);
+    _audioFile = newAudioFile;
+  }
+
+  @override
+  bool search(String searchTerm) => false;
+
+  @override
+  File getDisplayData() => _audioFile;
+
+  File getAudioFile() => _audioFile;
+
+  void setAudioFile({required File newAudioFile}) {
+    _audioFile = newAudioFile;
+  }
+
+  void setAudioFileWithPath({required String newAudioPath}) {
+    File newAudioFile = File(newAudioPath);
+    _audioFile = newAudioFile;
+  }
+
+  @override
+  String serialize() => "audio:${_audioFile.path}";
+
+  static bool isAudioSerializedData({required String individualData}) {
+    return individualData.substring(0, 5) == "audio";
+  }
+
+  @override
+  NoteIndividualDataType getType() => NoteIndividualDataType.audio;
 }

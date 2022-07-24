@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:note_that/pages/noteEditor/widgets/noteTitle.dart';
-import 'package:note_that/pages/noteEditor/widgets/noteWidgetAdder.dart';
-import 'package:note_that/pages/noteEditor/widgets/noteWidgetsList.dart';
+import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteTitle.dart';
+import 'package:note_that/pages/noteEditor/widgets/actions/noteWidgetAdder.dart';
+import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteWidgetsList.dart';
 import 'package:note_that/stores/notesStore.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
 import 'package:provider/provider.dart';

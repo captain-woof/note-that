@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
-import 'package:note_that/pages/noteEditor/widgets/noteImage.dart';
-import 'package:note_that/pages/noteEditor/widgets/noteText.dart';
+import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteImage.dart';
+import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteText.dart';
+import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteVideo.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
 import 'package:provider/provider.dart';
 
@@ -43,8 +44,8 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
               noteSelected.getBodyData()[index + 1];
 
           return () {
+            // For text
             if (individualData.getType() == NoteIndividualDataType.text) {
-              // For text
               return NoteText(
                 initialValue: (individualData as TextData).getText(),
                 onChanged: (val) {
@@ -57,15 +58,23 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
                   removeIndividualData(noteSelected, index);
                 },
               );
-            } else if (individualData.getType() ==
-                NoteIndividualDataType.image) {
-              // For image
+            }
+            // For image
+            else if (individualData.getType() == NoteIndividualDataType.image) {
               return NoteImage(
                 imageData: individualData as ImageData,
                 onDelete: () {
                   removeIndividualData(noteSelected, index);
                 },
               );
+            }
+            // For video
+            else if (individualData.getType() == NoteIndividualDataType.video) {
+              return NoteVideo(
+                  videoData: individualData as VideoData,
+                  onDelete: () {
+                    removeIndividualData(noteSelected, index);
+                  });
             } else {
               // For unsupported data
               return const SizedBox();

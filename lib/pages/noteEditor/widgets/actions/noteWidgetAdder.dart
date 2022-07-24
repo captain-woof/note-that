@@ -13,6 +13,13 @@ class NoteWidgetAdder extends StatelessWidget {
         builder: (context) => const Camera());
   }
 
+  void handleShowCamcorder({required BuildContext context}) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Camera(mode: CameraType.video));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<NoteData>(builder: (context, noteSelected, child) {
@@ -43,7 +50,10 @@ class NoteWidgetAdder extends StatelessWidget {
 
             // Video recorder
             _PostWidgetAdderButton(
-                onPressed: () {}, iconData: Icons.video_call_outlined),
+                onPressed: () {
+                  handleShowCamcorder(context: context);
+                },
+                iconData: Icons.video_call_outlined),
 
             // Audio recorder
             _PostWidgetAdderButton(

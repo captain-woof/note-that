@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/widgets/videoPlayer.dart';
 import 'package:provider/provider.dart';
 
 class NoteBox extends StatelessWidget {
@@ -43,16 +44,34 @@ class NoteBox extends StatelessWidget {
                 const SizedBox(height: 2),
                 Expanded(
                     // Summary of the note (first inidividual data)
-                    child: summaryIndividualData.getType() ==
-                            NoteIndividualDataType.text
-                        ? Text(summaryIndividualData.getDisplayData(),
-                            overflow: TextOverflow.fade,
-                            style: Theme.of(context).textTheme.bodySmall)
-                        : (summaryIndividualData.getType() ==
-                                NoteIndividualDataType.image
-                            ? Image.file((summaryIndividualData as ImageData)
-                                .getImageFile())
-                            : const SizedBox()))
+                    child: () {
+                  // For text
+                  if (summaryIndividualData.getType() ==
+                      NoteIndividualDataType.text) {
+                    return Text(summaryIndividualData.getDisplayData(),
+                        overflow: TextOverflow.fade,
+                        style: Theme.of(context).textTheme.bodySmall);
+                  }
+                  // For image
+                  else if (summaryIndividualData.getType() ==
+                      NoteIndividualDataType.image) {
+                    return Image.file(
+                        (summaryIndividualData as ImageData).getImageFile());
+                  }
+                  // For video
+                  else if (summaryIndividualData.getType() ==
+                      NoteIndividualDataType.video) {
+                    return VideoPlayer(
+                        videoData: summaryIndividualData as VideoData,
+                        autoPlay: false,
+                        loop: true,
+                        videoPlayerMode: VideoPlayerMode.withControls);
+                  }
+                  // Fallback
+                  else {
+                    return const SizedBox();
+                  }
+                }())
               ],
             ),
           ),

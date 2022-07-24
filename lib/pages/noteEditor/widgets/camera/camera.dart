@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:note_that/stores/notesStore.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/widgets/videoPlayer.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 enum CameraType { image, video }
 
-enum CameraCaptureState { standby, operating, finished }
+enum CameraCaptureState { standby, operating, paused, finished }
 
 class Camera extends StatefulWidget {
   final CameraType mode; // "image" or "video"
@@ -102,7 +102,54 @@ class _CameraState extends State<Camera> {
     });
   }
 
-  // Function to save taken photo
+  // Function to start recording video
+  void recordVideo() {
+    _cameraController.startVideoRecording().then((_) {
+      setState(() {
+        _cameraCaptureState = CameraCaptureState.operating;
+      });
+    });
+  }
+
+  // Function to pause recording video
+  void pauseVideo() {
+    _cameraController.pauseVideoRecording().then((_) {
+      setState(() {
+        _cameraCaptureState = CameraCaptureState.paused;
+      });
+    });
+  }
+
+  // Function to resume recording video
+  void resumeVideo() {
+    _cameraController.resumeVideoRecording().then((_) {
+      setState(() {
+        _cameraCaptureState = CameraCaptureState.operating;
+      });
+    });
+  }
+
+  // Function to stop recording video
+  void stopVideo() {
+    _cameraController.stopVideoRecording().then((videoRecorded) {
+      setState(() {
+        _cameraCaptureState = CameraCaptureState.finished;
+        _tempFile = videoRecorded;
+      });
+    });
+  }
+
+  // Function to save recording video
+  void saveVideo(NoteData noteSelected) {
+    getApplicationDocumentsDirectory().then((saveDirectory) {
+      String savePath = path.join(saveDirectory.path, _tempFile.name);
+      _tempFile.saveTo(savePath).then((_) {
+        noteSelected.addIndividualData(
+            noteIndividualData: savePath, type: NoteIndividualDataType.video);
+        Navigator.of(context).pop();
+      });
+    });
+  }
 
   @override
   void initState() {
@@ -129,7 +176,9 @@ class _CameraState extends State<Camera> {
       return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: const Text("Take an image"),
+          title: Text(widget.mode == CameraType.image
+              ? "Take an image"
+              : "Take a video"),
           centerTitle: true,
           titleTextStyle: TextStyle(
               color: Colors.white,
@@ -151,8 +200,8 @@ class _CameraState extends State<Camera> {
               // Display camera if ready.
               return Stack(
                 children: [
-                  // Camera preview
-                  if (_cameraCaptureState == CameraCaptureState.standby)
+                  // Camera/Camcorder live feed
+                  if (_cameraCaptureState != CameraCaptureState.finished)
                     Transform.scale(
                       scale: scale,
                       alignment: Alignment.topCenter,
@@ -161,26 +210,48 @@ class _CameraState extends State<Camera> {
                       ),
                     ),
 
-                  if (_cameraCaptureState == CameraCaptureState.finished)
+                  // Image taken preview
+                  if (widget.mode == CameraType.image &&
+                      _cameraCaptureState == CameraCaptureState.finished)
                     Transform.scale(
                       scale: scale,
                       alignment: Alignment.topCenter,
                       child: Image.file(File(_tempFile.path)),
                     ),
 
+                  // Video captured preview
+                  if (widget.mode == CameraType.video &&
+                      _cameraCaptureState == CameraCaptureState.finished)
+                    Transform.scale(
+                      scale: scale,
+                      alignment: Alignment.topCenter,
+                      child: VideoPlayer.fromFile(
+                        videoFile: File(_tempFile.path),
+                        loop: true,
+                        autoPlay: true,
+                      ),
+                    ),
+
                   // Camera Action buttons
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: CameraActionButtons(
-                        cameraType: widget.mode,
-                        cameraCaptureState: _cameraCaptureState,
-                        switchCameraLensDirection: switchCameraLensDirection,
-                        canFlipCameraLensDirection:
-                            areMultipleCamerasAvailable(),
-                        takePicture: takePicture,
-                        savePicture: () {
-                          savePicture(noteSelected);
-                        }),
+                      cameraType: widget.mode,
+                      cameraCaptureState: _cameraCaptureState,
+                      switchCameraLensDirection: switchCameraLensDirection,
+                      canFlipCameraLensDirection: areMultipleCamerasAvailable(),
+                      takePicture: takePicture,
+                      savePicture: () {
+                        savePicture(noteSelected);
+                      },
+                      recordVideo: recordVideo,
+                      pauseVideo: pauseVideo,
+                      resumeVideo: resumeVideo,
+                      stopVideo: stopVideo,
+                      saveVideo: () {
+                        saveVideo(noteSelected);
+                      },
+                    ),
                   )
                 ],
               );
@@ -192,12 +263,13 @@ class _CameraState extends State<Camera> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(
-                      semanticsLabel: "Initialising camera",
+                    CircularProgressIndicator(
+                      semanticsLabel:
+                          "Opening ${widget.mode == CameraType.image ? 'camera' : 'camcorder'}",
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      "Opening camera",
+                      "Opening ${widget.mode == CameraType.image ? 'camera' : 'camcorder'}",
                       style: Theme.of(context).textTheme.bodyMedium,
                     )
                   ],
