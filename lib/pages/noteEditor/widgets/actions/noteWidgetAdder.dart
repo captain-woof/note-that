@@ -57,7 +57,12 @@ class NoteWidgetAdder extends StatelessWidget {
 
             // Audio recorder
             _PostWidgetAdderButton(
-                onPressed: () {}, iconData: Icons.multitrack_audio_outlined),
+                onPressed: () {
+                  noteSelected.addIndividualData(
+                      noteIndividualData: "",
+                      type: NoteIndividualDataType.audio);
+                },
+                iconData: Icons.multitrack_audio_outlined),
           ],
         ),
       );

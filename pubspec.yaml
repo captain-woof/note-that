@@ -39,6 +39,7 @@ dependencies:
   video_player: ^2.4.5
   flutter_video_info: ^1.2.0
   device_info_plus: ^4.0.1
+  audio_waveforms: ^0.1.3
 
 dev_dependencies:
   flutter_test:

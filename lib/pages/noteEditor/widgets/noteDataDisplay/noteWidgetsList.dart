@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteAudio.dart';
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteImage.dart';
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteText.dart';
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteVideo.dart';
@@ -72,6 +73,15 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
             else if (individualData.getType() == NoteIndividualDataType.video) {
               return NoteVideo(
                   videoData: individualData as VideoData,
+                  onDelete: () {
+                    removeIndividualData(noteSelected, index);
+                  });
+            }
+
+            // For audio
+            else if (individualData.getType() == NoteIndividualDataType.audio) {
+              return NoteAudio(
+                  audioData: individualData as AudioData,
                   onDelete: () {
                     removeIndividualData(noteSelected, index);
                   });

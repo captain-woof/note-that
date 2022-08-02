@@ -46,7 +46,8 @@ class ThemeCustom {
                 height: 1.625,
                 color: Colors.grey[800]),
             labelLarge: GoogleFonts.poppins(),
-            labelSmall: GoogleFonts.poppins()),
+            labelSmall:
+                GoogleFonts.poppins(color: Colors.grey[800], fontSize: 12)),
         colorScheme: ColorScheme.fromSeed(seedColor: _primaryColor),
         floatingActionButtonTheme:
             const FloatingActionButtonThemeData(backgroundColor: _primaryColor),
