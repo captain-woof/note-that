@@ -4,6 +4,7 @@ import 'package:note_that/pages/noteEditor/widgets/actions/noteWidgetAdder.dart'
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteWidgetsList.dart';
 import 'package:note_that/stores/notesStore.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/widgets/snackbars.dart';
 import 'package:provider/provider.dart';
 
 class NoteEditor extends StatelessWidget {
@@ -15,15 +16,7 @@ class NoteEditor extends StatelessWidget {
     notesStore.updateNote(noteUpdated: noteSelected).then((_) {
       noteSelected.blankOut();
       notesStore.updateAllNotesStored().then((_) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            Icon(Icons.check, color: Colors.white),
-            SizedBox(width: 8),
-            Text("Note saved."),
-          ],
-        )));
+        SnackBars.showInfoMessage(context, "Note saved.");
         Navigator.of(context).pop();
       });
     });
