@@ -126,11 +126,22 @@ class NoteData with ChangeNotifier {
     }
   }
 
-  void removeIndividualData({required int index}) {
+  Future<void> removeIndividualData({required int index}) async {
     if (index < 0 || index >= _bodyData.length) {
       throw ("Invalid index of individual data");
     } else {
+      // Delete file
+      NoteIndividualData individualDataToDelete = _bodyData.elementAt(index);
+      if (individualDataToDelete.getType() == NoteIndividualDataType.image ||
+          individualDataToDelete.getType() == NoteIndividualDataType.video ||
+          individualDataToDelete.getType() == NoteIndividualDataType.audio) {
+        File fileToDelete = individualDataToDelete.getDisplayData();
+        await fileToDelete.delete();
+      }
+
+      // Delete data
       _bodyData.removeAt(index);
+
       notifyListeners();
     }
   }
