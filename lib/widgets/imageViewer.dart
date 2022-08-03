@@ -1,6 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
+//////////////////////////////
+// FROM FILE
+//////////////////////////////
+
 class ImageViewer extends StatefulWidget {
   final File imgFile;
 
@@ -52,5 +56,45 @@ class _ImageViewerState extends State<ImageViewer> {
               ),
             ),
           );
+  }
+}
+
+//////////////////////////////
+// FROM FILE
+//////////////////////////////
+
+class ImageViewerFromUrl extends StatelessWidget {
+  final String imgUrl;
+
+  const ImageViewerFromUrl({Key? key, required this.imgUrl}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      imgUrl,
+      errorBuilder: (context, error, stackTrace) => Container(
+        decoration: BoxDecoration(color: Colors.grey[600]),
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
+        child: Center(
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            runSpacing: 4,
+            spacing: 4,
+            children: [
+              Text(
+                "Could not load image",
+                textAlign: TextAlign.center,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.merge(const TextStyle(color: Colors.white)),
+              ),
+              const Icon(Icons.error_outline, color: Colors.white, size: 20)
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

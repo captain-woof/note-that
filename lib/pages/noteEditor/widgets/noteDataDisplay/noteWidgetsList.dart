@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteAudio.dart';
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteImage.dart';
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteText.dart';
+import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteUrl.dart';
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteVideo.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
 import 'package:note_that/widgets/snackbars.dart';
@@ -87,6 +88,21 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
             else if (individualData.getType() == NoteIndividualDataType.audio) {
               return NoteAudio(
                   audioData: individualData as AudioData,
+                  onDelete: () {
+                    removeIndividualData(noteSelected, index);
+                  });
+            }
+
+            // For url
+            else if (individualData.getType() == NoteIndividualDataType.url) {
+              return NoteUrl(
+                  urlData: individualData as UrlData,
+                  onChange: (val) {
+                    noteSelected.setIndividualData(
+                        index: index + 1,
+                        newNoteIndividualData: val,
+                        type: NoteIndividualDataType.url);
+                  },
                   onDelete: () {
                     removeIndividualData(noteSelected, index);
                   });

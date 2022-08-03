@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import "dart:convert" as convert;
 
-enum NoteIndividualDataType { title, text, image, video, audio }
+enum NoteIndividualDataType { title, text, image, video, audio, url }
 
 class NoteData with ChangeNotifier {
   int? _id;
@@ -54,6 +54,12 @@ class NoteData with ChangeNotifier {
         newBodyData.add(AudioData.fromSerialized(
             audioDataSerialized: individualSerializedData));
       }
+      // If data is url
+      else if (UrlData.isUrlSerializedData(
+          individualData: individualSerializedData)) {
+        newBodyData.add(
+            UrlData.fromSerialized(urlSerialized: individualSerializedData));
+      }
     }
     _bodyData = newBodyData;
   }
@@ -93,6 +99,10 @@ class NoteData with ChangeNotifier {
     else if (type == NoteIndividualDataType.audio) {
       _bodyData.add(AudioData.fromPath(audioPath: noteIndividualData));
     }
+    // If data to add is url
+    else if (type == NoteIndividualDataType.url) {
+      _bodyData.add(UrlData(url: noteIndividualData));
+    }
     notifyListeners();
   }
 
@@ -121,6 +131,10 @@ class NoteData with ChangeNotifier {
       else if (type == NoteIndividualDataType.audio) {
         (_bodyData[index] as AudioData)
             .setAudioFileWithPath(newAudioPath: newNoteIndividualData);
+      }
+      // If data to add is url
+      else if (type == NoteIndividualDataType.url) {
+        (_bodyData[index] as UrlData).setUrl(newUrl: newNoteIndividualData);
       }
       notifyListeners();
     }
@@ -204,7 +218,8 @@ class TitleData extends NoteIndividualData {
   String serialize() => "title:$_title";
 
   static bool isTitleSerializedData({required String individualData}) {
-    return individualData.substring(0, 5) == "title";
+    return individualData.length >= 6 &&
+        individualData.substring(0, 5) == "title";
   }
 
   @override
@@ -240,7 +255,8 @@ class TextData extends NoteIndividualData {
   String serialize() => "text:$_text";
 
   static bool isTextSerializedData({required String individualData}) {
-    return individualData.substring(0, 4) == "text";
+    return individualData.length >= 5 &&
+        individualData.substring(0, 4) == "text";
   }
 
   @override
@@ -286,7 +302,8 @@ class ImageData extends NoteIndividualData {
   String serialize() => "image:${_imgFile.path}";
 
   static bool isImgSerializedData({required String individualData}) {
-    return individualData.substring(0, 5) == "image";
+    return individualData.length >= 6 &&
+        individualData.substring(0, 5) == "image";
   }
 
   @override
@@ -332,7 +349,8 @@ class VideoData extends NoteIndividualData {
   String serialize() => "video:${_videoFile.path}";
 
   static bool isVideoSerializedData({required String individualData}) {
-    return individualData.substring(0, 5) == "video";
+    return individualData.length >= 6 &&
+        individualData.substring(0, 5) == "video";
   }
 
   @override
@@ -378,9 +396,47 @@ class AudioData extends NoteIndividualData {
   String serialize() => "audio:${_audioFile.path}";
 
   static bool isAudioSerializedData({required String individualData}) {
-    return individualData.substring(0, 5) == "audio";
+    return individualData.length >= 6 &&
+        individualData.substring(0, 5) == "audio";
   }
 
   @override
   NoteIndividualDataType getType() => NoteIndividualDataType.audio;
+}
+
+class UrlData extends NoteIndividualData {
+  late String _url;
+
+  UrlData({required String url}) {
+    _url = url;
+  }
+
+  UrlData.fromSerialized({required String urlSerialized}) {
+    _url = urlSerialized.substring(4);
+  }
+
+  @override
+  bool search(String searchTerm) {
+    return _url.toLowerCase().contains(searchTerm.toLowerCase());
+  }
+
+  @override
+  String getDisplayData() => _url;
+
+  String getText() => _url;
+
+  void setUrl({required String newUrl}) {
+    _url = newUrl;
+  }
+
+  @override
+  String serialize() => "url:$_url";
+
+  static bool isUrlSerializedData({required String individualData}) {
+    return individualData.length >= 4 &&
+        individualData.substring(0, 3) == "url";
+  }
+
+  @override
+  NoteIndividualDataType getType() => NoteIndividualDataType.url;
 }

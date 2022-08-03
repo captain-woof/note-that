@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_that/pages/home/home.dart';
 import 'package:note_that/pages/noteEditor/noteEditor.dart';
+import 'package:note_that/pages/webView/webView.dart';
 import 'package:note_that/stores/notesStore.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
 import 'package:note_that/theme/theme.dart';
@@ -36,7 +37,8 @@ class NoteThat extends StatelessWidget {
         theme: ThemeCustom.getThemeData(),
         routes: {
           "/": (context) => const HomePage(),
-          "/note_editor": (context) => const NoteEditor()
+          "/note_editor": (context) => const NoteEditor(),
+          "/web_view": (context) => const WebView()
         },
       ),
     );

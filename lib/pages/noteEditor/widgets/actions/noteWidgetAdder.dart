@@ -63,6 +63,14 @@ class NoteWidgetAdder extends StatelessWidget {
                       type: NoteIndividualDataType.audio);
                 },
                 iconData: Icons.multitrack_audio_outlined),
+
+            // Url
+            _PostWidgetAdderButton(
+                onPressed: () {
+                  noteSelected.addIndividualData(
+                      noteIndividualData: "", type: NoteIndividualDataType.url);
+                },
+                iconData: Icons.link)
           ],
         ),
       );
