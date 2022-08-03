@@ -32,11 +32,16 @@ class _UrlViewerState extends State<UrlViewer> {
     if (_textController.text == "") {
       return null;
     } else {
-      // await MetadataFetch.extract(_textController.text);
-      var response = await http.get(Uri.parse(_textController.text));
-      var document = MetadataFetch.responseToDocument(response);
-      var metadata = MetadataParser.parse(document);
-      return metadata;
+      try {
+        var response = await http.get(Uri.parse(_textController.text));
+        var document = MetadataFetch.responseToDocument(response);
+        var metadata = MetadataParser.parse(document);
+        return metadata;
+      } catch (e) {
+        if (!(e is ArgumentError)) {
+          SnackBars.showErrorMessage(context, "Failed to load metadata");
+        }
+      }
     }
   }
 
@@ -74,7 +79,11 @@ class _UrlViewerState extends State<UrlViewer> {
           // Preview
           InkWell(
             onTap: () {
-              WebView.openWebView(context, _textController.text);
+              if (_textController.text != "") {
+                WebView.openWebView(context, _textController.text);
+              } else {
+                SnackBars.showErrorMessage(context, "Empty url");
+              }
             },
             child: FutureBuilder<Metadata?>(
                 future: _getMetadataFutureBuilder(),
@@ -120,34 +129,40 @@ class _UrlViewerState extends State<UrlViewer> {
                         _scrollController.position.maxScrollExtent + 35,
                         duration: const Duration(seconds: 1),
                         curve: Curves.easeOut);
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Image
-                        ImageViewerFromUrl(imgUrl: snapshot.data?.image ?? ""),
+                    return SizedBox(
+                      width: double.maxFinite,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Image
+                          if (_textController.text != "") ...[
+                            ImageViewerFromUrl(
+                                imgUrl: snapshot.data?.image ?? ""),
+                            const SizedBox(height: 8)
+                          ],
 
-                        // Title
-                        const SizedBox(height: 8),
-                        RichText(
-                            text: TextSpan(children: [
-                          TextSpan(
-                              text: snapshot.data?.title ?? "No title",
-                              style: widget.miniViewer
-                                  ? Theme.of(context).textTheme.titleSmall
-                                  : Theme.of(context).textTheme.titleMedium),
-                          const WidgetSpan(child: SizedBox(width: 8)),
-                          WidgetSpan(
-                              child: Icon(
-                            Icons.link,
-                            color: Theme.of(context).colorScheme.primary,
-                          ))
-                        ])),
+                          // Title
+                          RichText(
+                              text: TextSpan(children: [
+                            TextSpan(
+                                text: snapshot.data?.title ?? "No title",
+                                style: widget.miniViewer
+                                    ? Theme.of(context).textTheme.titleSmall
+                                    : Theme.of(context).textTheme.titleMedium),
+                            const WidgetSpan(child: SizedBox(width: 8)),
+                            WidgetSpan(
+                                child: Icon(
+                              Icons.link,
+                              color: Theme.of(context).colorScheme.primary,
+                            ))
+                          ])),
 
-                        // Description
-                        if (!widget.miniViewer)
-                          Text(snapshot.data?.description ?? "No description",
-                              style: Theme.of(context).textTheme.bodySmall),
-                      ],
+                          // Description
+                          if (!widget.miniViewer)
+                            Text(snapshot.data?.description ?? "No description",
+                                style: Theme.of(context).textTheme.bodySmall),
+                        ],
+                      ),
                     );
                   }
 
