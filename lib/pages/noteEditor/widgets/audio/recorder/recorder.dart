@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:note_that/utils/time_counter.dart';
 import 'package:note_that/widgets/snackbars.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,18 +40,26 @@ class _RecorderState extends State<Recorder> {
   Future<void> togglePauseResume(TimeCounter timeCounter) async {
     if (_recorderState == RecorderState.paused) {
       // If paused, resume
-      await _recorderController.record();
-      timeCounter.resume();
-      setState(() {
-        _recorderState = RecorderState.recording;
-      });
+      try {
+        await _recorderController.record();
+        timeCounter.resume();
+        setState(() {
+          _recorderState = RecorderState.recording;
+        });
+      } catch (e) {
+        SnackBars.showErrorMessage(context, "Could not resume recording");
+      }
     } else if (_recorderState == RecorderState.recording) {
       // If recording, pause
-      await _recorderController.pause();
-      timeCounter.pause();
-      setState(() {
-        _recorderState = RecorderState.paused;
-      });
+      try {
+        await _recorderController.pause();
+        timeCounter.pause();
+        setState(() {
+          _recorderState = RecorderState.paused;
+        });
+      } catch (e) {
+        SnackBars.showErrorMessage(context, "Could not pause recording");
+      }
     }
   }
 
@@ -71,19 +77,24 @@ class _RecorderState extends State<Recorder> {
           _recorderState = RecorderState.recording;
         });
       } catch (e) {
-        SnackBars.showErrorMessage(context, "Failed to start recording.");
+        SnackBars.showErrorMessage(context, "Could not start recording");
       }
     } else if (_recorderState == RecorderState.recording ||
         _recorderState == RecorderState.paused) {
       // If recording, stop
-      String? filePath = await _recorderController.stop();
-      if (filePath != null) {
-        widget.saveAudio(filePath);
+      try {
+        String? filePath = await _recorderController.stop();
+        if (filePath != null) {
+          widget.saveAudio(filePath);
+        }
+        timeCounter.stop();
+        setState(() {
+          _recorderState = RecorderState.stopped;
+        });
+      } catch (e) {
+        SnackBars.showErrorMessage(
+            context, "Could not stop and save recording");
       }
-      timeCounter.stop();
-      setState(() {
-        _recorderState = RecorderState.stopped;
-      });
     }
   }
 

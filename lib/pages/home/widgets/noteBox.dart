@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/widgets/imageViewer.dart';
 import 'package:note_that/widgets/videoPlayer.dart';
 import 'package:provider/provider.dart';
 
@@ -55,8 +56,9 @@ class NoteBox extends StatelessWidget {
                   // For image
                   else if (summaryIndividualData.getType() ==
                       NoteIndividualDataType.image) {
-                    return Image.file(
-                        (summaryIndividualData as ImageData).getImageFile());
+                    return ImageViewer(
+                        imgFile: (summaryIndividualData as ImageData)
+                            .getImageFile());
                   }
                   // For video
                   else if (summaryIndividualData.getType() ==

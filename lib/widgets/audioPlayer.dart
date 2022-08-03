@@ -20,6 +20,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
   late PlayerController _playerController;
   AudioPlayerState _audioPlayerState = AudioPlayerState.unprepared;
   int _trackDurationMillis = 0;
+  bool _error = false;
 
   @override
   void dispose() {
@@ -29,70 +30,86 @@ class _AudioPlayerState extends State<AudioPlayer> {
 
   // Function to prepare player
   Future<void> _preparePlayer(TimeCounter timeCounter) async {
-    if (_audioPlayerState == AudioPlayerState.unprepared ||
-        _audioPlayerState == AudioPlayerState.finished) {
-      _playerController = PlayerController();
+    if ((_audioPlayerState == AudioPlayerState.unprepared ||
+            _audioPlayerState == AudioPlayerState.finished) &&
+        !_error) {
+      try {
+        _playerController = PlayerController();
 
-      await _playerController
-          .preparePlayer(widget.audioData?.getAudioFile().path ?? "");
+        await _playerController
+            .preparePlayer(widget.audioData?.getAudioFile().path ?? "");
 
-      _playerController.onPlayerStateChanged.listen((newPlayerState) {
-        // Whenever player is stopped, need to prepare the player again
-        if (newPlayerState == PlayerState.stopped) {
-          timeCounter.stop();
-          setState(() {
-            _audioPlayerState = AudioPlayerState.finished;
-          });
-        }
-      });
+        _playerController.onPlayerStateChanged.listen((newPlayerState) {
+          // Whenever player is stopped, need to prepare the player again
+          if (newPlayerState == PlayerState.stopped) {
+            timeCounter.stop();
+            setState(() {
+              _audioPlayerState = AudioPlayerState.finished;
+            });
+          }
+        });
 
-      int newTrackDuration = await _playerController.getDuration();
+        int newTrackDuration = await _playerController.getDuration();
 
-      setState(() {
-        _trackDurationMillis = newTrackDuration;
-        _audioPlayerState = AudioPlayerState.readyToPlay;
-      });
+        setState(() {
+          _trackDurationMillis = newTrackDuration;
+          _audioPlayerState = AudioPlayerState.readyToPlay;
+        });
+      } catch (e) {
+        setState(() {
+          _error = true;
+        });
+        SnackBars.showErrorMessage(context, "Could not load audio.");
+      }
     }
   }
 
   // Function to toggle pause/resume
   Future<void> _togglePauseResume(TimeCounter timeCounter) async {
-    if (_audioPlayerState == AudioPlayerState.paused) {
-      // If paused, resume
-      await _playerController.startPlayer();
-      timeCounter.resume();
-      setState(() {
-        _audioPlayerState = AudioPlayerState.playing;
-      });
-    } else if (_audioPlayerState == AudioPlayerState.playing) {
-      // If recording, pause
-      await _playerController.pausePlayer();
-      timeCounter.pause();
-      setState(() {
-        _audioPlayerState = AudioPlayerState.paused;
-      });
+    try {
+      if (_audioPlayerState == AudioPlayerState.paused) {
+        // If paused, resume
+        await _playerController.startPlayer();
+        timeCounter.resume();
+        setState(() {
+          _audioPlayerState = AudioPlayerState.playing;
+        });
+      } else if (_audioPlayerState == AudioPlayerState.playing) {
+        // If recording, pause
+        await _playerController.pausePlayer();
+        timeCounter.pause();
+        setState(() {
+          _audioPlayerState = AudioPlayerState.paused;
+        });
+      }
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Operation failed");
     }
   }
 
   // Function to toggle start/stop
   Future<void> _toggleStartStop(TimeCounter timeCounter) async {
-    if (_audioPlayerState == AudioPlayerState.readyToPlay) {
-      // If player is stopped, play.
-      try {
-        await _playerController.startPlayer();
-        timeCounter.start();
-        setState(() {
-          _audioPlayerState = AudioPlayerState.playing;
-        });
-      } catch (e) {
-        if (!mounted) return;
-        SnackBars.showErrorMessage(context, e.toString());
+    try {
+      if (_audioPlayerState == AudioPlayerState.readyToPlay) {
+        // If player is stopped, play.
+        try {
+          await _playerController.startPlayer();
+          timeCounter.start();
+          setState(() {
+            _audioPlayerState = AudioPlayerState.playing;
+          });
+        } catch (e) {
+          if (!mounted) return;
+          SnackBars.showErrorMessage(context, e.toString());
+        }
+      } else if (_audioPlayerState == AudioPlayerState.playing ||
+          _audioPlayerState == AudioPlayerState.paused) {
+        // If playing, stop
+        await _playerController.stopPlayer();
+        timeCounter.stop();
       }
-    } else if (_audioPlayerState == AudioPlayerState.playing ||
-        _audioPlayerState == AudioPlayerState.paused) {
-      // If playing, stop
-      await _playerController.stopPlayer();
-      timeCounter.stop();
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Operation failed");
     }
   }
 
@@ -115,16 +132,34 @@ class _AudioPlayerState extends State<AudioPlayer> {
                 child: LayoutBuilder(
                   builder: (context, constraints) =>
                       _audioPlayerState == AudioPlayerState.unprepared
-                          ?
-                          // Spinner shown when audio player is preparing
-                          const Center(
-                              child: SizedBox.square(
-                              dimension: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                semanticsLabel: "Loading audio...",
-                              ),
-                            ))
+                          ? (!_error
+                              ?
+                              // Spinner shown when audio player is preparing
+                              const Center(
+                                  child: SizedBox.square(
+                                  dimension: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    semanticsLabel: "Loading audio...",
+                                  ),
+                                ))
+                              :
+                              // Error shown when preparing failed
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                      Text("Error",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall),
+                                      const SizedBox(width: 8),
+                                      const Icon(
+                                        Icons.error_outline,
+                                        color: Colors.red,
+                                        size: 20,
+                                      )
+                                    ]))
                           :
 
                           // Audio waveforms shown when player is prepared

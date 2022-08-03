@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/widgets/snackbars.dart';
 import 'package:video_player/video_player.dart' as video_player;
 
 enum VideoPlayerMode { withoutControls, withControls }
@@ -46,7 +47,8 @@ class VideoPlayer extends StatefulWidget {
 
 class _VideoPlayerState extends State<VideoPlayer> {
   late video_player.VideoPlayerController _videoPlayerController;
-  bool autoPlayed = false;
+  bool _autoPlayed = false;
+  bool _error = false;
 
   @override
   void initState() {
@@ -59,6 +61,11 @@ class _VideoPlayerState extends State<VideoPlayer> {
       // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
       _videoPlayerController.setLooping(widget.loop);
       setState(() {});
+    }).onError((error, stackTrace) {
+      SnackBars.showErrorMessage(context, "Failed to load video");
+      setState(() {
+        _error = true;
+      });
     });
   }
 
@@ -71,39 +78,63 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Future<void> playVideo({Function()? callback}) {
     return _videoPlayerController.play().then((_) {
       setState(callback ?? () {});
+    }).onError((error, stackTrace) {
+      SnackBars.showErrorMessage(context, "Could not play video");
     });
   }
 
   Future<void> pauseVideo({Function()? callback}) {
     return _videoPlayerController.pause().then((_) {
       setState(callback ?? () {});
+    }).onError((error, stackTrace) {
+      SnackBars.showErrorMessage(context, "Could not pause video");
     });
   }
 
   @override
   Widget build(BuildContext context) {
     // Auto-play only if configured AND if this is the first time playing
-    if (widget.autoPlay && !autoPlayed) {
+    if (widget.autoPlay && !_autoPlayed) {
       Future.delayed(const Duration(milliseconds: 500), () async {
         await playVideo(callback: () {
-          autoPlayed = true;
+          _autoPlayed = true;
         });
       });
     }
 
     return GestureDetector(
-      onTap: () async {
-        if (_videoPlayerController.value.isPlaying) {
-          await pauseVideo();
-        } else {
-          await playVideo();
-        }
-      },
+      onTap: _error
+          ? null
+          : () async {
+              if (_videoPlayerController.value.isPlaying) {
+                await pauseVideo();
+              } else {
+                await playVideo();
+              }
+            },
       // Video player + Controls
       child: Stack(
         children: [
           // Video player
           video_player.VideoPlayer(_videoPlayerController),
+
+          // Error shown if loading failed
+          if (_error)
+            Center(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Could not load video",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.merge(const TextStyle(color: Colors.white)),
+                ),
+                const SizedBox(width: 4),
+                const Icon(Icons.error_outline, color: Colors.white, size: 20)
+              ],
+            )),
 
           // Action buttons (if needed)
           if (widget.videoPlayerMode == VideoPlayerMode.withControls)
@@ -118,14 +149,16 @@ class _VideoPlayerState extends State<VideoPlayer> {
                         icon: _videoPlayerController.value.isPlaying
                             ? Icons.pause
                             : Icons.play_arrow,
-                        onPressed: () async {
-                          if (_videoPlayerController.value.isPlaying) {
-                            await pauseVideo();
-                          } else {
-                            await playVideo();
-                          }
-                          setState(() {});
-                        },
+                        onPressed: _error
+                            ? null
+                            : () async {
+                                if (_videoPlayerController.value.isPlaying) {
+                                  await pauseVideo();
+                                } else {
+                                  await playVideo();
+                                }
+                                setState(() {});
+                              },
                         semanticLabel:
                             "${_videoPlayerController.value.isPlaying ? 'Pause' : 'Resume'} video playback")
                   ],

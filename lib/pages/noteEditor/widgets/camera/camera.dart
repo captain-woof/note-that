@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/widgets/snackbars.dart';
 import 'package:note_that/widgets/videoPlayer.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/services.dart';
@@ -48,18 +49,55 @@ class _CameraState extends State<Camera> {
   Future<void> initializeCamera(
       {required int cameraLensSelectedIndex,
       bool cleanupNeeded = false}) async {
-    _cameraCaptureState = CameraCaptureState.standby;
-    if (cleanupNeeded) {
-      await _cameraController.dispose();
+    try {
+      _cameraCaptureState = CameraCaptureState.standby;
+      if (cleanupNeeded) {
+        await _cameraController.dispose();
+      }
+
+      _cameraController = CameraController(
+          _cameraDescriptions[cameraLensSelectedIndex], ResolutionPreset.high,
+          enableAudio: widget.mode == CameraType.video);
+
+      await _cameraController.initialize();
+
+      scale = getCameraScale();
+    } catch (e) {
+      if (e is CameraException) {
+        switch (e.code) {
+          case 'CameraAccessDenied':
+            SnackBars.showErrorMessage(
+                context, 'Camera access permission denied');
+            break;
+          case 'CameraAccessDeniedWithoutPrompt':
+            SnackBars.showErrorMessage(
+                context, 'Please manually enable camera permissions');
+            break;
+          case 'CameraAccessRestricted':
+            SnackBars.showErrorMessage(
+                context, 'Need admin to grant camera permission');
+            break;
+          case 'AudioAccessDenied':
+            SnackBars.showErrorMessage(
+                context, 'Microphone access permission denied');
+            break;
+          case 'AudioAccessDeniedWithoutPrompt':
+            SnackBars.showErrorMessage(
+                context, 'Please manually enable microphone permissions');
+            break;
+          case 'AudioAccessRestricted':
+            SnackBars.showErrorMessage(
+                context, 'Need admin to grant microphone permission');
+            break;
+          default:
+            SnackBars.showErrorMessage(context, 'Could not start camera');
+            break;
+        }
+      } else {
+        SnackBars.showErrorMessage(context, 'Could not start camera');
+      }
+      Navigator.of(context).pop();
     }
-
-    _cameraController = CameraController(
-        _cameraDescriptions[cameraLensSelectedIndex], ResolutionPreset.high,
-        enableAudio: widget.mode == CameraType.video);
-
-    await _cameraController.initialize();
-
-    scale = getCameraScale();
   }
 
   // Function to switch between available cameras
@@ -83,74 +121,97 @@ class _CameraState extends State<Camera> {
   }
 
   // Function to take photo
-  void takePicture() {
-    _cameraController.takePicture().then((file) {
+  Future<void> takePicture() async {
+    try {
+      XFile imgFile = await _cameraController.takePicture();
       setState(() {
-        _tempFile = file;
+        _tempFile = imgFile;
         _cameraCaptureState = CameraCaptureState.finished;
       });
-    });
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Could not capture image");
+    }
   }
 
   // Function to save a taken photo
-  void savePicture(NoteData noteSelected) {
-    getApplicationDocumentsDirectory().then((saveDirectory) {
+  Future<void> savePicture(NoteData noteSelected) async {
+    try {
+      Directory saveDirectory = await getApplicationDocumentsDirectory();
       String savePath = path.join(saveDirectory.path, _tempFile.name);
-      _tempFile.saveTo(savePath).then((_) {
-        noteSelected.addIndividualData(
-            noteIndividualData: savePath, type: NoteIndividualDataType.image);
-        Navigator.of(context).pop();
-      });
-    });
+      await _tempFile.saveTo(savePath);
+      noteSelected.addIndividualData(
+          noteIndividualData: savePath, type: NoteIndividualDataType.image);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Could not save image");
+    }
   }
 
   // Function to start recording video
-  void recordVideo() {
-    _cameraController.startVideoRecording().then((_) {
+  Future<void> recordVideo() async {
+    try {
+      await _cameraController.startVideoRecording();
       setState(() {
         _cameraCaptureState = CameraCaptureState.operating;
       });
-    });
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Could not start recording");
+    }
   }
 
   // Function to pause recording video
-  void pauseVideo() {
-    _cameraController.pauseVideoRecording().then((_) {
+  Future<void> pauseVideo() async {
+    try {
+      await _cameraController.pauseVideoRecording();
       setState(() {
         _cameraCaptureState = CameraCaptureState.paused;
       });
-    });
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Cannot pause recording");
+    }
   }
 
   // Function to resume recording video
-  void resumeVideo() {
-    _cameraController.resumeVideoRecording().then((_) {
+  Future<void> resumeVideo() async {
+    try {
+      await _cameraController.resumeVideoRecording();
       setState(() {
         _cameraCaptureState = CameraCaptureState.operating;
       });
-    });
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Cannot resume recording");
+    }
   }
 
   // Function to stop recording video
-  void stopVideo() {
-    _cameraController.stopVideoRecording().then((videoRecorded) {
+  Future<void> stopVideo() async {
+    try {
+      XFile videoRecorded = await _cameraController.stopVideoRecording();
       setState(() {
         _cameraCaptureState = CameraCaptureState.finished;
         _tempFile = videoRecorded;
       });
-    });
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Cannot stop recording");
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    }
   }
 
   // Function to save recording video
-  void saveVideo(NoteData noteSelected) {
-    getApplicationDocumentsDirectory().then((saveDirectory) {
+  Future<void> saveVideo(NoteData noteSelected) async {
+    try {
+      Directory saveDirectory = await getApplicationDocumentsDirectory();
       String savePath = path.join(saveDirectory.path, _tempFile.name);
-      _tempFile.saveTo(savePath).then((_) {
-        noteSelected.addIndividualData(
-            noteIndividualData: savePath, type: NoteIndividualDataType.video);
-        Navigator.of(context).pop();
-      });
-    });
+      await _tempFile.saveTo(savePath);
+      noteSelected.addIndividualData(
+          noteIndividualData: savePath, type: NoteIndividualDataType.video);
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Could not save video");
+    } finally {
+      Navigator.of(context).pop();
+    }
   }
 
   // Function to get if pause/resume recording video is supported

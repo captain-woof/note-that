@@ -13,13 +13,16 @@ class NoteEditor extends StatelessWidget {
   Future<void> handleSaveNote(BuildContext context, NotesStore notesStore,
       NoteData noteSelected) async {
     // Save as an updated noted, because coming to this screen implies that a new note has already been created and saved to database
-    notesStore.updateNote(noteUpdated: noteSelected).then((_) {
+    try {
+      await notesStore.updateNote(noteUpdated: noteSelected);
       noteSelected.blankOut();
       notesStore.updateAllNotesStored().then((_) {
         SnackBars.showInfoMessage(context, "Note saved.");
         Navigator.of(context).pop();
       });
-    });
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Could not save.");
+    }
   }
 
   @override

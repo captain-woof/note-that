@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/widgets/imageViewer.dart';
 
 class NoteImage extends StatelessWidget {
   final ImageData imageData;
@@ -14,7 +13,7 @@ class NoteImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.file(imageData.getImageFile()),
+        ImageViewer(imgFile: imageData.getImageFile()),
         IconButton(
           onPressed: onDelete,
           icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent),

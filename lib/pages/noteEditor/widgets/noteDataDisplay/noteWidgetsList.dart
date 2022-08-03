@@ -4,6 +4,7 @@ import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteImage.dar
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteText.dart';
 import 'package:note_that/pages/noteEditor/widgets/noteDataDisplay/noteVideo.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/widgets/snackbars.dart';
 import 'package:provider/provider.dart';
 
 class NoteWidgetsList extends StatefulWidget {
@@ -17,8 +18,12 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
   int prevLenOfList = 0;
   Key prevKeyOfList = UniqueKey();
 
-  void removeIndividualData(NoteData noteSelected, int index) {
-    noteSelected.removeIndividualData(index: index + 1);
+  Future<void> removeIndividualData(NoteData noteSelected, int index) async {
+    try {
+      await noteSelected.removeIndividualData(index: index + 1);
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Could not delete the media");
+    }
   }
 
   @override
