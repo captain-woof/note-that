@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/widgets/audioPlayer.dart';
 import 'package:note_that/widgets/imageViewer.dart';
 import 'package:note_that/widgets/videoPlayer.dart';
 import 'package:provider/provider.dart';
@@ -68,6 +69,13 @@ class NoteBox extends StatelessWidget {
                         autoPlay: false,
                         loop: true,
                         videoPlayerMode: VideoPlayerMode.withControls);
+                  }
+                  // For audio
+                  else if (summaryIndividualData.getType() ==
+                      NoteIndividualDataType.audio) {
+                    return AudioPlayer(
+                        audioData: summaryIndividualData as AudioData,
+                        miniPlayer: true);
                   }
                   // Fallback
                   else {

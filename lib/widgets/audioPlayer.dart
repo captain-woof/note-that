@@ -9,8 +9,11 @@ enum AudioPlayerState { unprepared, readyToPlay, playing, paused, finished }
 
 class AudioPlayer extends StatefulWidget {
   final AudioData? audioData;
+  final bool miniPlayer;
 
-  const AudioPlayer({Key? key, required this.audioData}) : super(key: key);
+  const AudioPlayer(
+      {Key? key, required this.audioData, this.miniPlayer = false})
+      : super(key: key);
 
   @override
   State<AudioPlayer> createState() => _AudioPlayerState();
@@ -145,15 +148,15 @@ class _AudioPlayerState extends State<AudioPlayer> {
                                 ))
                               :
                               // Error shown when preparing failed
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                              Wrap(
+                                  runAlignment: WrapAlignment.center,
+                                  spacing: 8,
+                                  runSpacing: 8,
                                   children: [
                                       Text("Error",
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodySmall),
-                                      const SizedBox(width: 8),
                                       const Icon(
                                         Icons.error_outline,
                                         color: Colors.red,
@@ -163,61 +166,68 @@ class _AudioPlayerState extends State<AudioPlayer> {
                           :
 
                           // Audio waveforms shown when player is prepared
-                          AudioFileWaveforms(
-                              size: Size(constraints.maxWidth - 12, 80.0),
-                              playerController: _playerController,
-                              playerWaveStyle: PlayerWaveStyle(
-                                fixedWaveColor: Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.5),
-                                liveWaveColor:
-                                    Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
+                          GestureDetector(
+                              onTap: () {
+                                _toggleStartStop(timeCounter);
+                              },
+                              child: AudioFileWaveforms(
+                                size: Size(constraints.maxWidth - 12, 80.0),
+                                playerController: _playerController,
+                                playerWaveStyle: PlayerWaveStyle(
+                                  fixedWaveColor: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withOpacity(0.5),
+                                  liveWaveColor:
+                                      Theme.of(context).colorScheme.primary,
+                                ),
+                              )),
                 ),
               ),
 
-              // Timer
-              Text(
-                "${timeCounter.formattedTime}/${TimeCounter.formatTime(_trackDurationMillis)}",
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(width: 4),
+              // Display timer and controls only if not a miniplayer
+              if (!widget.miniPlayer) ...[
+                // Timer
+                Text(
+                  "${timeCounter.formattedTime}/${TimeCounter.formatTime(_trackDurationMillis)}",
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(width: 4),
 
-              // Pause/resume button (shown only when playing has started)
-              IconButton(
-                icon: Icon(
-                    _audioPlayerState == AudioPlayerState.paused
-                        ? Icons.play_arrow
-                        : Icons.pause,
-                    color: Colors.black),
-                onPressed: _audioPlayerState != AudioPlayerState.readyToPlay
-                    ? () {
-                        _togglePauseResume(timeCounter);
-                      }
-                    : null,
-              ),
+                // Pause/resume button (shown only when playing has started)
+                IconButton(
+                  icon: Icon(
+                      _audioPlayerState == AudioPlayerState.paused
+                          ? Icons.play_arrow
+                          : Icons.pause,
+                      color: Colors.black),
+                  onPressed: _audioPlayerState != AudioPlayerState.readyToPlay
+                      ? () {
+                          _togglePauseResume(timeCounter);
+                        }
+                      : null,
+                ),
 
-              // Start/stop button (shown always)
-              IconButton(
-                icon: Icon(
-                    // This function figures out the icon to display
-                    () {
-                  if (_audioPlayerState == AudioPlayerState.unprepared) {
-                    return Icons.play_disabled;
-                  } else if (_audioPlayerState ==
-                      AudioPlayerState.readyToPlay) {
-                    return Icons.play_arrow;
-                  } else if (_audioPlayerState == AudioPlayerState.playing ||
-                      _audioPlayerState == AudioPlayerState.paused) {
-                    return Icons.stop;
-                  }
-                }(), color: Colors.red),
-                onPressed: () {
-                  _toggleStartStop(timeCounter);
-                },
-              ),
+                // Start/stop button (shown always)
+                IconButton(
+                  icon: Icon(
+                      // This function figures out the icon to display
+                      () {
+                    if (_audioPlayerState == AudioPlayerState.unprepared) {
+                      return Icons.play_disabled;
+                    } else if (_audioPlayerState ==
+                        AudioPlayerState.readyToPlay) {
+                      return Icons.play_arrow;
+                    } else if (_audioPlayerState == AudioPlayerState.playing ||
+                        _audioPlayerState == AudioPlayerState.paused) {
+                      return Icons.stop;
+                    }
+                  }(), color: Colors.red),
+                  onPressed: () {
+                    _toggleStartStop(timeCounter);
+                  },
+                ),
+              ]
             ],
           ),
         );
