@@ -1,7 +1,10 @@
 import "package:flutter/material.dart";
+import 'package:note_that/stores/notesStore.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/utils/note_context_drawer.dart';
 import 'package:note_that/widgets/audioPlayer.dart';
 import 'package:note_that/widgets/imageViewer.dart';
+import 'package:note_that/widgets/snackbars.dart';
 import 'package:note_that/widgets/urlViewer.dart';
 import 'package:note_that/widgets/videoPlayer.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +17,23 @@ class NoteBox extends StatelessWidget {
       {Key? key, required this.searchTextController, required this.note})
       : super(key: key);
 
+  void handleOpenNote(BuildContext context, NoteData noteSelected) {
+    noteSelected.setFromNoteData(noteData: note);
+    searchTextController.text = "";
+    Navigator.pushNamed(context, "/note_editor");
+  }
+
+  Future<void> handleDeleteNote(
+      BuildContext context, NotesStore notesStore) async {
+    try {
+      await notesStore.deleteNote(noteToDelete: note).then((_) {
+        SnackBars.showInfoMessage(context, "Note deleted");
+      });
+    } catch (e) {
+      SnackBars.showErrorMessage(context, "Note could not be deleted");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     NoteIndividualData summaryIndividualData = note.getBodyData().length == 1
@@ -23,15 +43,25 @@ class NoteBox extends StatelessWidget {
         ? "No title"
         : note.getBodyData()[0].getDisplayData();
 
-    return Consumer<NoteData>(builder: (context, noteSelected, child) {
+    return Consumer2<NotesStore, NoteData>(
+        builder: (context, notesStore, noteSelected, child) {
       return Card(
         elevation: 2,
         child: InkWell(
           onTap: () {
-            noteSelected.setId(note.getId() as int);
-            noteSelected.setBodyData(note.getBodyData());
-            searchTextController.text = "";
-            Navigator.pushNamed(context, "/note_editor");
+            handleOpenNote(context, noteSelected);
+          },
+          onLongPress: () {
+            NoteContextDrawer.showNoteContextDrawer(
+                context: context,
+                handleDeleteNote: () {
+                  Navigator.of(context).pop();
+                  handleDeleteNote(context, notesStore);
+                },
+                handleOpenNote: () {
+                  Navigator.of(context).pop();
+                  handleOpenNote(context, noteSelected);
+                });
           },
           splashColor: Theme.of(context).colorScheme.primary.withAlpha(125),
           child: Container(

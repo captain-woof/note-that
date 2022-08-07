@@ -23,7 +23,7 @@ class NotesStore extends ChangeNotifier {
     }, onOpen: (db) async {
       ready = true;
       _db = db;
-      updateAllNotesStored();
+      await updateAllNotesStored();
     });
   }
 
@@ -73,15 +73,17 @@ class NotesStore extends ChangeNotifier {
     if (_db != null) {
       await _db!.insert(_tableName,
           {"id": _notesStored.length, "body_serialized": noteNew.serialize()});
-      updateAllNotesStored();
+      await updateAllNotesStored();
     }
   }
 
   Future<void> deleteNote({required NoteData noteToDelete}) async {
     if (_db != null) {
-      await _db!.delete(_tableName,
-          where: "id = ?", whereArgs: [noteToDelete.getId()]);
-      updateAllNotesStored();
+      int? noteToDeleteId = noteToDelete.getId();
+      await noteToDelete.removeAllIndividualData();
+      await _db!
+          .delete(_tableName, where: "id = ?", whereArgs: [noteToDeleteId]);
+      await updateAllNotesStored();
     }
   }
 
@@ -95,7 +97,7 @@ class NotesStore extends ChangeNotifier {
           },
           where: "id = ?",
           whereArgs: [noteUpdated.getId()]);
-      updateAllNotesStored();
+      await updateAllNotesStored();
     }
   }
 }

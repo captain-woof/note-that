@@ -42,77 +42,83 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
         prevLenOfList = noteSelected.getBodyData().length;
       }
 
-      return Expanded(
-          child: ListView.builder(
-        key: listKey,
-        itemCount: noteSelected.getBodyData().length - 1,
-        itemBuilder: (context, index) {
-          NoteIndividualData individualData =
-              noteSelected.getBodyData()[index + 1];
+      return noteSelected.getBodyData().isEmpty
+          ? const SizedBox()
+          : Expanded(
+              child: ListView.builder(
+              key: listKey,
+              itemCount: noteSelected.getBodyData().length - 1,
+              itemBuilder: (context, index) {
+                NoteIndividualData individualData =
+                    noteSelected.getBodyData()[index + 1];
 
-          return () {
-            // For text
-            if (individualData.getType() == NoteIndividualDataType.text) {
-              return NoteText(
-                initialValue: (individualData as TextData).getText(),
-                onChanged: (val) {
-                  noteSelected.setIndividualData(
-                      index: index + 1,
-                      newNoteIndividualData: val,
-                      type: NoteIndividualDataType.text);
-                },
-                onDelete: () {
-                  removeIndividualData(noteSelected, index);
-                },
-              );
-            }
-            // For image
-            else if (individualData.getType() == NoteIndividualDataType.image) {
-              return NoteImage(
-                imageData: individualData as ImageData,
-                onDelete: () {
-                  removeIndividualData(noteSelected, index);
-                },
-              );
-            }
-            // For video
-            else if (individualData.getType() == NoteIndividualDataType.video) {
-              return NoteVideo(
-                  videoData: individualData as VideoData,
-                  onDelete: () {
-                    removeIndividualData(noteSelected, index);
-                  });
-            }
+                return () {
+                  // For text
+                  if (individualData.getType() == NoteIndividualDataType.text) {
+                    return NoteText(
+                      initialValue: (individualData as TextData).getText(),
+                      onChanged: (val) {
+                        noteSelected.setIndividualData(
+                            index: index + 1,
+                            newNoteIndividualData: val,
+                            type: NoteIndividualDataType.text);
+                      },
+                      onDelete: () {
+                        removeIndividualData(noteSelected, index);
+                      },
+                    );
+                  }
+                  // For image
+                  else if (individualData.getType() ==
+                      NoteIndividualDataType.image) {
+                    return NoteImage(
+                      imageData: individualData as ImageData,
+                      onDelete: () {
+                        removeIndividualData(noteSelected, index);
+                      },
+                    );
+                  }
+                  // For video
+                  else if (individualData.getType() ==
+                      NoteIndividualDataType.video) {
+                    return NoteVideo(
+                        videoData: individualData as VideoData,
+                        onDelete: () {
+                          removeIndividualData(noteSelected, index);
+                        });
+                  }
 
-            // For audio
-            else if (individualData.getType() == NoteIndividualDataType.audio) {
-              return NoteAudio(
-                  audioData: individualData as AudioData,
-                  onDelete: () {
-                    removeIndividualData(noteSelected, index);
-                  });
-            }
+                  // For audio
+                  else if (individualData.getType() ==
+                      NoteIndividualDataType.audio) {
+                    return NoteAudio(
+                        audioData: individualData as AudioData,
+                        onDelete: () {
+                          removeIndividualData(noteSelected, index);
+                        });
+                  }
 
-            // For url
-            else if (individualData.getType() == NoteIndividualDataType.url) {
-              return NoteUrl(
-                  urlData: individualData as UrlData,
-                  onChange: (val) {
-                    noteSelected.setIndividualData(
-                        index: index + 1,
-                        newNoteIndividualData: val,
-                        type: NoteIndividualDataType.url);
-                  },
-                  onDelete: () {
-                    removeIndividualData(noteSelected, index);
-                  });
-            } else {
-              // For unsupported data
-              return const SizedBox();
-            }
-          }();
-        },
-      ));
+                  // For url
+                  else if (individualData.getType() ==
+                      NoteIndividualDataType.url) {
+                    return NoteUrl(
+                        urlData: individualData as UrlData,
+                        onChange: (val) {
+                          noteSelected.setIndividualData(
+                              index: index + 1,
+                              newNoteIndividualData: val,
+                              type: NoteIndividualDataType.url);
+                        },
+                        onDelete: () {
+                          removeIndividualData(noteSelected, index);
+                        });
+                  } else {
+                    // For unsupported data
+                    return const SizedBox();
+                  }
+                }();
+              },
+            ));
     });
   }
 }

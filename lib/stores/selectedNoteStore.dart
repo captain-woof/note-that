@@ -64,6 +64,11 @@ class NoteData with ChangeNotifier {
     _bodyData = newBodyData;
   }
 
+  void setFromNoteData({required NoteData noteData}) {
+    _id = noteData.getId();
+    _bodyData = noteData.getBodyData();
+  }
+
   int? getId() => _id;
 
   void setId(int newId) {
@@ -155,6 +160,28 @@ class NoteData with ChangeNotifier {
 
       // Delete data
       _bodyData.removeAt(index);
+
+      notifyListeners();
+    }
+  }
+
+  Future<void> removeAllIndividualData() async {
+    if (_bodyData.isNotEmpty) {
+      // First delete all media
+      List<Future<FileSystemEntity>> filesToDeletePromises = [];
+      for (int i = 0; i < _bodyData.length; i++) {
+        NoteIndividualData individualDataToDelete = _bodyData.elementAt(i);
+        if (individualDataToDelete.getType() == NoteIndividualDataType.image ||
+            individualDataToDelete.getType() == NoteIndividualDataType.video ||
+            individualDataToDelete.getType() == NoteIndividualDataType.audio) {
+          File fileToDelete = individualDataToDelete.getDisplayData();
+          filesToDeletePromises.add(fileToDelete.delete());
+        }
+      }
+      await Future.wait(filesToDeletePromises);
+
+      // Now blank out
+      blankOut();
 
       notifyListeners();
     }
