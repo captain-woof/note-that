@@ -37,7 +37,7 @@ class NoteThat extends StatelessWidget {
         theme: ThemeCustom.getThemeData(),
         routes: {
           "/": (context) => const HomePage(),
-          "/note_editor": (context) => const NoteEditor(),
+          "/note_editor": (context) => NoteEditor(),
           "/web_view": (context) => const WebView()
         },
       ),

@@ -16,8 +16,28 @@ class NoteWidgetsList extends StatefulWidget {
 }
 
 class _NoteWidgetsListState extends State<NoteWidgetsList> {
-  int prevLenOfList = 0;
-  Key prevKeyOfList = UniqueKey();
+  ScrollController? _scrollController;
+  double _scrollOffset = 0;
+  int _numOfWidgets = 0;
+
+  @override
+  void dispose() {
+    _scrollController?.dispose();
+    super.dispose();
+  }
+
+  ScrollController _prepareScrollController({double initialScrollOffset = 0}) {
+    // Dispose previous controller
+    _scrollController?.dispose();
+    // Init controller
+    _scrollController =
+        ScrollController(initialScrollOffset: initialScrollOffset);
+    // Attach listener for scroll position
+    _scrollController?.addListener(() {
+      _scrollOffset = _scrollController?.offset ?? 0;
+    });
+    return _scrollController as ScrollController;
+  }
 
   Future<void> removeIndividualData(NoteData noteSelected, int index) async {
     try {
@@ -27,28 +47,57 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
     }
   }
 
+  Future<void> _scrollToBottomIfNeeded(NoteData noteSelected) async {
+    // ignore: unnecessary_null_comparison
+    if (_scrollController != null &&
+        (_scrollController as ScrollController).hasClients) {
+      try {
+        // If this is neither the first widget nor loading for first time
+        if (_numOfWidgets != 0) {
+          // If a new widget was added
+          if (_numOfWidgets < noteSelected.getBodyData().length) {
+            // Scroll smoothly all the way down
+            await Future.delayed(const Duration(milliseconds: 100), () {
+              _scrollController?.jumpTo(_scrollOffset);
+              _scrollController?.animateTo(
+                  _scrollController?.position.maxScrollExtent ?? 0,
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeInOutCubic);
+            });
+          }
+
+          // If an existing widget was removed
+          else if (_numOfWidgets > noteSelected.getBodyData().length) {
+            // DO NOTHING
+          }
+
+          // Save new number of widgets
+          _numOfWidgets = noteSelected.getBodyData().length;
+        }
+      } catch (e) {
+        // DO NOTHING
+      }
+    } else {
+      _numOfWidgets = noteSelected.getBodyData().length;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<NoteData>(builder: (context, noteSelected, child) {
-      Key listKey;
-
-      if (noteSelected.getBodyData().length == prevLenOfList) {
-        // If `build` is not invoked for deletion
-        listKey = prevKeyOfList;
-      } else {
-        // If `build` is invoked for deletion
-        listKey = UniqueKey();
-        prevKeyOfList = listKey;
-        prevLenOfList = noteSelected.getBodyData().length;
-      }
+      // Scroll to bottom if num of widgets changed
+      _scrollToBottomIfNeeded(noteSelected);
 
       return noteSelected.getBodyData().isEmpty
           ? const SizedBox()
           : Expanded(
               child: ListView.builder(
-              key: listKey,
+              key: Key(noteSelected.getBodyData().length.toString()),
+              controller:
+                  _prepareScrollController(initialScrollOffset: _scrollOffset),
               itemCount: noteSelected.getBodyData().length - 1,
               itemBuilder: (context, index) {
+                // Get the individual data
                 NoteIndividualData individualData =
                     noteSelected.getBodyData()[index + 1];
 
