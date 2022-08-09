@@ -5,13 +5,15 @@ import 'package:note_that/widgets/urlViewer.dart';
 class NoteUrl extends StatelessWidget {
   final UrlData urlData;
   final Function() onDelete;
+  final Function() onShare;
   final Function(String) onChange;
 
   const NoteUrl(
       {Key? key,
       required this.onDelete,
       required this.urlData,
-      required this.onChange})
+      required this.onChange,
+      required this.onShare})
       : super(key: key);
 
   @override
@@ -22,11 +24,26 @@ class NoteUrl extends StatelessWidget {
           url: urlData.getDisplayData(),
           onChange: onChange,
         ),
-        IconButton(
-          onPressed: onDelete,
-          icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent),
-          iconSize: 20,
-        )
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Share button
+            IconButton(
+              onPressed: onShare,
+              icon: Icon(Icons.share,
+                  color: Theme.of(context).colorScheme.primary),
+              iconSize: 24,
+            ),
+
+            // Delete button
+            IconButton(
+              onPressed: onDelete,
+              icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent),
+              iconSize: 24,
+            )
+          ],
+        ),
       ],
     );
   }

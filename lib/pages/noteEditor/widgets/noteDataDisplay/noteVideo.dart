@@ -6,8 +6,13 @@ import 'package:flutter_video_info/flutter_video_info.dart' as video_info;
 class NoteVideo extends StatelessWidget {
   final VideoData videoData;
   final Function() onDelete;
+  final Function() onShare;
 
-  const NoteVideo({Key? key, required this.videoData, required this.onDelete})
+  const NoteVideo(
+      {Key? key,
+      required this.videoData,
+      required this.onDelete,
+      required this.onShare})
       : super(key: key);
 
   @override
@@ -17,11 +22,26 @@ class NoteVideo extends StatelessWidget {
         // Video player and controls
         _NoteVideoPlayer(videoData: videoData),
 
-        // Delete button
-        IconButton(
-          onPressed: onDelete,
-          icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent),
-          iconSize: 20,
+        // Action buttons
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Share button
+            IconButton(
+              onPressed: onShare,
+              icon: Icon(Icons.share,
+                  color: Theme.of(context).colorScheme.primary),
+              iconSize: 24,
+            ),
+
+            // Delete button
+            IconButton(
+              onPressed: onDelete,
+              icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent),
+              iconSize: 24,
+            )
+          ],
         ),
       ],
     );

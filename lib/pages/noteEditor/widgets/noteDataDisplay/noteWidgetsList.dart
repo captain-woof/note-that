@@ -47,6 +47,17 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
     }
   }
 
+  Future<void> shareIndividualData(
+      BuildContext context, NoteData noteSelected, int index) async {
+    try {
+      await noteSelected.shareIndividualData(
+          context: context, index: index + 1);
+    } catch (e) {
+      print(e);
+      SnackBars.showErrorMessage(context, "Could not share");
+    }
+  }
+
   Future<void> _scrollToBottomIfNeeded(NoteData noteSelected) async {
     // ignore: unnecessary_null_comparison
     if (_scrollController != null &&
@@ -83,7 +94,7 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext contextBuild) {
     return Consumer<NoteData>(builder: (context, noteSelected, child) {
       // Scroll to bottom if num of widgets changed
       _scrollToBottomIfNeeded(noteSelected);
@@ -97,6 +108,11 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
                   _prepareScrollController(initialScrollOffset: _scrollOffset),
               itemCount: noteSelected.getBodyData().length - 1,
               itemBuilder: (context, index) {
+                // Check for blank data
+                if (noteSelected.getBodyData().length < 2) {
+                  return const SizedBox();
+                }
+
                 // Get the individual data
                 NoteIndividualData individualData =
                     noteSelected.getBodyData()[index + 1];
@@ -105,27 +121,33 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
                   // For text
                   if (individualData.getType() == NoteIndividualDataType.text) {
                     return NoteText(
-                      initialValue: (individualData as TextData).getText(),
-                      onChanged: (val) {
-                        noteSelected.setIndividualData(
-                            index: index + 1,
-                            newNoteIndividualData: val,
-                            type: NoteIndividualDataType.text);
-                      },
-                      onDelete: () {
-                        removeIndividualData(noteSelected, index);
-                      },
-                    );
+                        initialValue: (individualData as TextData).getText(),
+                        onChanged: (val) {
+                          noteSelected.setIndividualData(
+                              index: index + 1,
+                              newNoteIndividualData: val,
+                              type: NoteIndividualDataType.text);
+                        },
+                        onDelete: () {
+                          removeIndividualData(noteSelected, index);
+                        },
+                        onShare: () {
+                          shareIndividualData(
+                              contextBuild, noteSelected, index);
+                        });
                   }
                   // For image
                   else if (individualData.getType() ==
                       NoteIndividualDataType.image) {
                     return NoteImage(
-                      imageData: individualData as ImageData,
-                      onDelete: () {
-                        removeIndividualData(noteSelected, index);
-                      },
-                    );
+                        imageData: individualData as ImageData,
+                        onDelete: () {
+                          removeIndividualData(noteSelected, index);
+                        },
+                        onShare: () {
+                          shareIndividualData(
+                              contextBuild, noteSelected, index);
+                        });
                   }
                   // For video
                   else if (individualData.getType() ==
@@ -134,6 +156,10 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
                         videoData: individualData as VideoData,
                         onDelete: () {
                           removeIndividualData(noteSelected, index);
+                        },
+                        onShare: () {
+                          shareIndividualData(
+                              contextBuild, noteSelected, index);
                         });
                   }
 
@@ -144,6 +170,10 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
                         audioData: individualData as AudioData,
                         onDelete: () {
                           removeIndividualData(noteSelected, index);
+                        },
+                        onShare: () {
+                          shareIndividualData(
+                              contextBuild, noteSelected, index);
                         });
                   }
 
@@ -160,6 +190,10 @@ class _NoteWidgetsListState extends State<NoteWidgetsList> {
                         },
                         onDelete: () {
                           removeIndividualData(noteSelected, index);
+                        },
+                        onShare: () {
+                          shareIndividualData(
+                              contextBuild, noteSelected, index);
                         });
                   } else {
                     // For unsupported data

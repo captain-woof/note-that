@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import "dart:convert" as convert;
+import 'package:share_plus/share_plus.dart';
 
 enum NoteIndividualDataType { title, text, image, video, audio, url }
 
@@ -142,6 +144,47 @@ class NoteData with ChangeNotifier {
         (_bodyData[index] as UrlData).setUrl(newUrl: newNoteIndividualData);
       }
       notifyListeners();
+    }
+  }
+
+  Future<void> shareIndividualData(
+      {required BuildContext context, required int index}) async {
+    if (index < 0 || index >= _bodyData.length) {
+      throw ("Invalid index of individual data");
+    } else {
+      // Prepare data to share
+      NoteIndividualData individualDataToShare = _bodyData.elementAt(index);
+      String subjectToShare =
+          _bodyData.isNotEmpty ? (_bodyData[0].getDisplayData() ?? "") : "";
+
+      // Calculate share position origin
+      final box = context.findRenderObject() as RenderBox?;
+      var sharePositionOrigin = box!.localToGlobal(Offset.zero) & box.size;
+
+      // If data is media, share file
+      if (individualDataToShare.getType() == NoteIndividualDataType.image) {
+        await Share.shareFiles([individualDataToShare.getDisplayData().path],
+            mimeTypes: ["image/*"],
+            subject: subjectToShare,
+            sharePositionOrigin: sharePositionOrigin);
+      } else if (individualDataToShare.getType() ==
+          NoteIndividualDataType.video) {
+        await Share.shareFiles([individualDataToShare.getDisplayData().path],
+            mimeTypes: ["video/*"],
+            subject: subjectToShare,
+            sharePositionOrigin: sharePositionOrigin);
+      } else if (individualDataToShare.getType() ==
+          NoteIndividualDataType.audio) {
+        await Share.shareFiles([individualDataToShare.getDisplayData().path],
+            mimeTypes: ["audio/*"],
+            subject: subjectToShare,
+            sharePositionOrigin: sharePositionOrigin);
+      }
+      // Else, share text
+      else {
+        await Share.share(individualDataToShare.getDisplayData(),
+            subject: subjectToShare, sharePositionOrigin: sharePositionOrigin);
+      }
     }
   }
 

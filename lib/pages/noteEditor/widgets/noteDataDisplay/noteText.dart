@@ -3,13 +3,15 @@ import "package:flutter/material.dart";
 class NoteText extends StatefulWidget {
   final void Function(String) onChanged;
   final void Function() onDelete;
+  final Function() onShare;
   final String initialValue;
 
   const NoteText(
       {Key? key,
       required this.onChanged,
       required this.onDelete,
-      this.initialValue = ""})
+      this.initialValue = "",
+      required this.onShare})
       : super(key: key);
 
   @override
@@ -58,10 +60,26 @@ class _NoteTextState extends State<NoteText> {
 
         if (isSelected)
           // Delete button
-          IconButton(
-            onPressed: widget.onDelete,
-            icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent),
-            iconSize: 20,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Share button
+              IconButton(
+                onPressed: widget.onShare,
+                icon: Icon(Icons.share,
+                    color: Theme.of(context).colorScheme.primary),
+                iconSize: 24,
+              ),
+
+              // Delete button
+              IconButton(
+                onPressed: widget.onDelete,
+                icon:
+                    const Icon(Icons.cancel_outlined, color: Colors.redAccent),
+                iconSize: 24,
+              )
+            ],
           ),
       ],
     );

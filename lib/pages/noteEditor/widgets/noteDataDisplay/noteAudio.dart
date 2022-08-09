@@ -6,8 +6,13 @@ import 'package:note_that/widgets/audioPlayer.dart';
 class NoteAudio extends StatefulWidget {
   final AudioData audioData;
   final Function() onDelete;
+  final Function() onShare;
 
-  const NoteAudio({Key? key, required this.audioData, required this.onDelete})
+  const NoteAudio(
+      {Key? key,
+      required this.audioData,
+      required this.onDelete,
+      required this.onShare})
       : super(key: key);
 
   @override
@@ -39,12 +44,27 @@ class _NoteAudioState extends State<NoteAudio> {
         ? Column(
             children: [
               AudioPlayer(audioData: widget.audioData),
-              IconButton(
-                onPressed: widget.onDelete,
-                icon:
-                    const Icon(Icons.cancel_outlined, color: Colors.redAccent),
-                iconSize: 20,
-              )
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Share button
+                  IconButton(
+                    onPressed: widget.onShare,
+                    icon: Icon(Icons.share,
+                        color: Theme.of(context).colorScheme.primary),
+                    iconSize: 24,
+                  ),
+
+                  // Delete button
+                  IconButton(
+                    onPressed: widget.onDelete,
+                    icon: const Icon(Icons.cancel_outlined,
+                        color: Colors.redAccent),
+                    iconSize: 24,
+                  )
+                ],
+              ),
             ],
           )
 
