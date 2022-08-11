@@ -7,41 +7,40 @@ class ThemeCustom {
   static ThemeData getThemeData() {
     return ThemeData(
         appBarTheme: AppBarTheme(
-            titleTextStyle: GoogleFonts.montserrat(
-              textStyle: const TextStyle(
-                  color: _primaryColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700),
+            titleTextStyle: GoogleFonts.poppins(
+              textStyle: TextStyle(
+                  color: Colors.grey[50],
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600),
             ),
-            actionsIconTheme: const IconThemeData(color: _primaryColor),
-            iconTheme: const IconThemeData(color: _primaryColor),
-            backgroundColor: Colors.white,
-            elevation: 0),
+            actionsIconTheme: IconThemeData(color: Colors.grey[50]),
+            iconTheme: IconThemeData(color: Colors.grey[50]),
+            backgroundColor: _primaryColor,
+            elevation: 4),
         scaffoldBackgroundColor: Colors.white,
         textTheme: TextTheme(
-            titleLarge: GoogleFonts.lato(
-                fontWeight: FontWeight.w600,
+            titleLarge: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
                 color: _primaryColor,
-                fontSize: 28,
-                letterSpacing: 0.1),
+                fontSize: 22),
             titleMedium: GoogleFonts.poppins(
                 fontWeight: FontWeight.w600,
                 color: _primaryColor,
-                fontSize: 24),
+                fontSize: 18),
             titleSmall: GoogleFonts.poppins(
               fontWeight: FontWeight.w500,
               color: _primaryColor,
-              fontSize: 20,
+              fontSize: 16,
             ),
             bodyLarge: GoogleFonts.lato(
-                fontSize: 20, letterSpacing: 0.1, height: 1.75),
+                fontSize: 18, letterSpacing: 0.1, height: 1.75),
             bodyMedium: GoogleFonts.poppins(
-                fontSize: 18,
+                fontSize: 16,
                 letterSpacing: 0.1,
                 height: 1.75,
                 wordSpacing: 0.1),
             bodySmall: GoogleFonts.poppins(
-                fontSize: 16,
+                fontSize: 14,
                 letterSpacing: 0.1,
                 height: 1.625,
                 color: Colors.grey[800]),

@@ -74,7 +74,7 @@ class NoteBox extends StatelessWidget {
                   title,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 8),
                 Expanded(
                     // Summary of the note (first inidividual data)
                     child: () {

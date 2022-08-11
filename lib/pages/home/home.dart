@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
     return Consumer2<NotesStore, NoteData>(
         builder: (context, notesStore, selectedNote, child) {
       return Scaffold(
-          appBar: AppBar(title: const Text("NoteThat")),
+          appBar: AppBar(title: const Text("NoteThat"), centerTitle: true),
           floatingActionButton: FloatingActionButton(
             // Creates a new post and opens editor
             onPressed: () {
@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
             child: const Icon(Icons.add, semanticLabel: "Add a note"),
           ),
           body: Container(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            padding: const EdgeInsets.fromLTRB(12, 32, 12, 12),
             child: Column(
               children: [
                 if (notesStore.getNotes(null).isNotEmpty)
@@ -58,11 +58,18 @@ class _HomePageState extends State<HomePage> {
                       handleSearch(notesStore, searchTerm);
                     },
                     style: Theme.of(context).textTheme.titleSmall,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                         hintText: "Search...",
-                        prefixIcon: Icon(Icons.search),
-                        contentPadding: EdgeInsets.all(0),
-                        border: OutlineInputBorder(borderSide: BorderSide())),
+                        prefixIcon: const Icon(Icons.search),
+                        contentPadding: const EdgeInsets.all(0),
+                        border: OutlineInputBorder(
+                            borderSide: const BorderSide(width: 1),
+                            borderRadius: BorderRadius.circular(16)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                width: 1.25,
+                                color: Theme.of(context).colorScheme.primary),
+                            borderRadius: BorderRadius.circular(16))),
                   ),
                 const SizedBox(height: 24),
                 NotesStoredGrid(

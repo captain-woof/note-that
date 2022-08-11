@@ -29,9 +29,6 @@ class NoteWidgetAdder extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Add Icon
-            const Icon(Icons.add, color: Colors.grey),
-
             // Text
             _PostWidgetAdderButton(
                 onPressed: () {

@@ -36,7 +36,11 @@ class _WebViewState extends State<WebView> {
       onWillPop: handleBackButtonNavigation,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_title),
+          title: Text(_title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall
+                  ?.merge(TextStyle(color: Colors.grey[50]))),
         ),
         body: Column(
           children: [

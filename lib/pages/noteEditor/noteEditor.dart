@@ -70,7 +70,7 @@ class NoteEditor extends StatelessWidget {
                     icon: Icon(
                       Icons.more_vert_sharp,
                       size: 28,
-                      color: Theme.of(context).primaryColor,
+                      color: Colors.grey[50],
                     ))
               ],
             ),
@@ -81,7 +81,7 @@ class NoteEditor extends StatelessWidget {
                 },
                 child: const Icon(Icons.check, semanticLabel: "Save note")),
             body: Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
               child: Column(children: const [
                 NoteTitle(), // Title of the note
                 NoteWidgetsList(), // List of all individual note widgets + note widget adder
