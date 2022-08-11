@@ -43,6 +43,13 @@ dependencies:
   metadata_fetch: ^0.4.1
   webview_flutter: ^3.0.4
   share_plus: ^4.0.10
+  flutter_launcher_icons: ^0.10.0
+
+flutter_icons:
+  image_path: assets/launcher-icon-base.png
+  android: true
+  ios: true
+  remove_alpha_ios: true
 
 dev_dependencies:
   flutter_test:
