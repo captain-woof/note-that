@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:note_that/pages/home/widgets/notesStoredGrid.dart';
 import 'package:note_that/stores/notesStore.dart';
 import 'package:note_that/stores/selectedNoteStore.dart';
+import 'package:note_that/utils/home_context_drawer.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -36,7 +37,21 @@ class _HomePageState extends State<HomePage> {
     return Consumer2<NotesStore, NoteData>(
         builder: (context, notesStore, selectedNote, child) {
       return Scaffold(
-          appBar: AppBar(title: const Text("NoteThat"), centerTitle: true),
+          appBar: AppBar(
+            title: const Text("NoteThat"),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    HomeContextDrawer.showNoteContextDrawer(context: context);
+                  },
+                  icon: Icon(
+                    Icons.more_vert_sharp,
+                    size: 28,
+                    color: Colors.grey[50],
+                  ))
+            ],
+          ),
           floatingActionButton: FloatingActionButton(
             // Creates a new post and opens editor
             onPressed: () {
