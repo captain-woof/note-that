@@ -41,10 +41,7 @@ onUnmounted(() => {
 
         <!-- Demo video -->
         <h1 class="main__demo-heading">Why choose Note That?</h1>
-        <video controls class="main__demo-video" :src="videoSource">
-            <source src="/videos/note-that-demo.m4v" media="all and (max-width: 575px)">
-            <source src="/videos/note-that-demo-widescreen.m4v" media="all and (min-width: 576px)">
-        </video>
+        <video controls class="main__demo-video" :src="videoSource" />
     </main>
 </template>
 
