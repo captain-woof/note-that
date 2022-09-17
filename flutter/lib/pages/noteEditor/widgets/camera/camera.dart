@@ -111,15 +111,6 @@ class _CameraState extends State<Camera> {
     });
   }
 
-  // Cleanup for screen and camera
-  void cleanup() async {
-    await Future.wait([
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]),
-      _cameraController.dispose()
-    ]);
-  }
-
   // Function to take photo
   Future<void> takePicture() async {
     try {
@@ -251,8 +242,10 @@ class _CameraState extends State<Camera> {
   @override
   void dispose() {
     // Dispose of the controller when the widget is disposed.
+    _cameraController.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
     super.dispose();
-    cleanup();
   }
 
   @override
