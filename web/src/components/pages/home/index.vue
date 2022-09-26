@@ -37,7 +37,12 @@ onUnmounted(() => {
         <!-- Demo screen -->
         <img src="/images/screen.png" alt="note that screen" class="main__demo-screen" />
 
-        <!-- TODO: DOWNLOAD -->
+        <!-- Download button -->
+        <a class="main__download-btn"
+            href='https://play.google.com/store/apps/details?id=in.sohail_saha.note_that&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+            <img alt='Get it on Google Play'
+                src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' />
+        </a>
 
         <!-- Demo video -->
         <h1 class="main__demo-heading">Why choose Note That?</h1>
@@ -62,9 +67,14 @@ onUnmounted(() => {
     width: 80%;
 }
 
+.main__download-btn>img {
+    max-width: 136px;
+    margin: 0 auto;
+}
+
 .main__demo-heading {
     font-size: var(--fs-600);
-    margin: var(--sp-200) auto 0 auto;
+    margin: var(--sp-600) auto 0 auto;
     text-align: center;
 }
 
@@ -77,6 +87,10 @@ onUnmounted(() => {
     .main__demo-screen {
         margin: 0 auto;
         width: 50%;
+    }
+
+    .main__download-btn>img {
+        max-width: 200px;
     }
 
     .main__demo-heading {
